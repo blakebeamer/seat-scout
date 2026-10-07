@@ -1,0 +1,1885 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Mayer Sphere Seat Scout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: three-pane console in a neutral, hairline system. Harness left, zoomable bowl map center (dot-grid canvas), seat dossier + outlook + picks right. Phones stack map first. Color lives only in the data. */
+:root{
+  --bg:#fafafa; --panel:#ffffff; --panel-2:#f5f5f5; --hover:#f4f4f4; --ink:#171717; --ink-2:#3f3f3f; --muted:#6f6f6f; --faint:#a1a1a1;
+  --line:#ebebeb; --line-2:#e2e2e2; --focus:#0070f3; --thumb:#ffffff;
+  --map:#fcfcfc; --dot:#e6e6e6; --stage:#171717; --stage-ink:#fafafa; --dim:#e9e9e9;
+  --good:#15803d; --warn:#b45309; --bad:#dc2626;
+  --s0:#d6d6d6; --s1:#93a5d7; --s2:#8669c9; --s3:#d25c7b; --s4:#eb872b; --s5:#f2b015;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236f6f6f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  --geo-ground:#efefec;--geo-area:#e5e4e0;--geo-water:#d3e0ea;--geo-road:#ffffff;--geo-casing:#d9d9d6;--geo-strip:#ffffff;--geo-strip-casing:#a9a9a6;--geo-glow:#f08733;--geo-free:#e2e2df;--geo-rail:#7f93c9;--geo-top:#ffffff;--geo-side:#dcdcd9;--geo-edge:#c9c9c6;--geo-shadow:rgba(0,0,0,.07);--geo-label:#5a5a5a;--geo-label-strong:#171717;--geo-halo:#efefec;--geo-walk:#a8a8a5;
+  --f-body:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#000000; --panel:#0a0a0a; --panel-2:#141414; --hover:#161616; --ink:#ededed; --ink-2:#c9c9c9; --muted:#a1a1a1; --faint:#6b6b6b;
+  --line:#1f1f1f; --line-2:#2b2b2b; --focus:#52a8ff; --thumb:#ededed;
+  --map:#050505; --dot:#1a1a1a; --stage:#ededed; --stage-ink:#0a0a0a; --dim:#1b1b1b;
+  --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+  --s0:#2c2c2c; --s1:#3957a6; --s2:#7859c8; --s3:#d5557a; --s4:#f08733; --s5:#ffc93c;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.6); --shadow-md:0 8px 24px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  --chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23a1a1a1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#000000; --panel:#0a0a0a; --panel-2:#141414; --hover:#161616; --ink:#ededed; --ink-2:#c9c9c9; --muted:#a1a1a1; --faint:#6b6b6b;
+  --line:#1f1f1f; --line-2:#2b2b2b; --focus:#52a8ff; --thumb:#ededed;
+  --map:#050505; --dot:#1a1a1a; --stage:#ededed; --stage-ink:#0a0a0a; --dim:#1b1b1b;
+  --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+  --s0:#2c2c2c; --s1:#3957a6; --s2:#7859c8; --s3:#d5557a; --s4:#f08733; --s5:#ffc93c;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.6); --shadow-md:0 8px 24px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  --chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23a1a1a1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  color-scheme:dark}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--f-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+::selection{background:color-mix(in srgb,var(--focus) 22%,transparent)}
+
+.app{height:100%;display:grid;grid-template-columns:300px minmax(0,1fr) 380px;grid-template-rows:auto minmax(0,1fr);
+  grid-template-areas:"top top top" "ctl map side";gap:12px;padding-block:0 12px;padding-inline:16px}
+
+/* top bar */
+.top{grid-area:top;display:flex;align-items:center;justify-content:space-between;gap:10px 20px;flex-wrap:wrap;padding-block:12px;border-bottom:1px solid var(--line);margin-inline:-16px;padding-inline:16px;background:var(--bg)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}
+.glyph{width:22px;height:22px;flex:none;border-radius:50%;background:conic-gradient(from 210deg,var(--s1),var(--s2),var(--s3),var(--s4),var(--s5),var(--s1));box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+h1{margin:0;font:600 15px/1 var(--f-body);letter-spacing:-.01em}
+.slash{color:var(--line-2);font-size:20px;font-weight:300;line-height:1}
+.crumb{font-size:14px;font-weight:500;color:var(--muted);white-space:nowrap}
+.tag{font:500 11px/1 var(--f-mono);color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:4px 8px;white-space:nowrap}
+.top-ctl{display:flex;gap:8px 14px;flex-wrap:wrap;align-items:center}
+.fld{display:flex;align-items:center;gap:8px}
+.fld>span,.lbl{font:500 11px/1.2 var(--f-mono);letter-spacing:.02em;text-transform:uppercase;color:var(--faint)}
+select,input[type=text]{height:32px;background:var(--panel);border:1px solid var(--line-2);border-radius:6px;padding:0 10px;font-size:13px;box-shadow:var(--shadow-sm);transition:border-color .15s,background-color .15s}
+select{appearance:none;-webkit-appearance:none;padding-right:30px;background-image:var(--chev);background-repeat:no-repeat;background-position:right 9px center;background-size:14px;cursor:pointer}
+select:hover,input[type=text]:hover{border-color:var(--faint)}
+input[type=text]::placeholder{color:var(--faint)}
+
+.seg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:2px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);text-align:left;line-height:1.25;transition:color .15s,background-color .15s}
+.seg button small{display:block;font:500 10px var(--f-mono);color:var(--faint)}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-checked="true"]{background:var(--panel);color:var(--ink);box-shadow:0 0 0 1px var(--line-2),var(--shadow-sm)}
+.seg button[aria-checked="true"] small{color:var(--muted)}
+
+/* panels */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:auto;min-height:0;min-width:0;box-shadow:var(--shadow-sm)}
+.controls{grid-area:ctl}
+.side{grid-area:side}
+.grp,.side section{padding:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+.grp:first-child,.side section:first-child{border-top:0}
+.side section[hidden]+section{border-top:1px solid var(--line)}
+.grp h3,.side h3{margin:0;font:600 13px/1.3 var(--f-body);letter-spacing:-.005em}
+.hdr{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hdr select{height:28px;font-size:12.5px}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.chipbtn{height:28px;border:1px solid var(--line-2);background:var(--panel);border-radius:999px;padding:0 11px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--ink-2);transition:all .15s}
+.chipbtn:hover{border-color:var(--faint);color:var(--ink)}
+.chipbtn[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.sl{display:grid;grid-template-columns:1fr auto;gap:6px 8px;align-items:center}
+.sl label{font-size:13px;font-weight:500;color:var(--ink-2)}
+.sl output{font:500 12px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.sl input{grid-column:1/-1}
+.sl .help,.help{grid-column:1/-1;font-size:12px;line-height:1.45;color:var(--faint);margin:0}
+.chk{display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:500;color:var(--ink-2);cursor:pointer}
+.chk input{accent-color:var(--ink);width:15px;height:15px;margin:2px 0 0;flex:none}
+
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;background:transparent;margin:0;cursor:pointer;--fill:50%}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:999px;background:linear-gradient(var(--ink),var(--ink)) 0/var(--fill) 100% no-repeat,var(--line-2)}
+input[type=range]::-moz-range-track{height:4px;border-radius:999px;background:var(--line-2)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:999px;background:var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--thumb);border:1px solid var(--line-2);box-shadow:0 1px 3px rgba(0,0,0,.18);margin-top:-6px;transition:transform .12s}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--thumb);border:1px solid var(--line-2);box-shadow:0 1px 3px rgba(0,0,0,.18)}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.1)}
+input[type=range]:disabled{opacity:.35;cursor:not-allowed}
+
+.btn{height:32px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line-2);background:var(--panel);border-radius:6px;padding:0 12px;cursor:pointer;font-size:13px;font-weight:500;box-shadow:var(--shadow-sm);transition:background-color .15s,border-color .15s}
+.btn:hover{background:var(--hover);border-color:var(--faint)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.primary:hover{opacity:.88;background:var(--ink)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap}
+details.method{font-size:12.5px;line-height:1.55;color:var(--muted)}
+details.method summary{cursor:pointer;font-weight:500;color:var(--ink);font-size:13px}
+details.method p,details.method li{margin:.55em 0}
+details.method a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--line-2);text-underline-offset:3px}
+details.method a:hover{text-decoration-color:var(--ink)}
+
+/* map */
+.mapwrap{grid-area:map;color:var(--ink);position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);min-height:0;box-shadow:var(--shadow-sm);background:var(--geo-ground)}
+#map{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#map:active{cursor:grabbing}
+.ov{position:absolute;display:flex;gap:6px}
+.glass{background:color-mix(in srgb,var(--panel) 86%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.search{top:12px;left:12px;right:300px}
+.search input{width:min(240px,100%)}
+.search button{height:32px;padding:0 12px}
+.zoom{top:12px;right:12px;gap:0;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.zoom button{border:0;border-left:1px solid var(--line);background:transparent;height:32px;min-width:34px;padding:0 10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-2)}
+.zoom button:first-child{border-left:0}
+.zoom button:hover{background:var(--hover);color:var(--ink)}
+.zoom button[aria-pressed="true"]{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.legend{left:12px;bottom:12px;flex-direction:column;border:1px solid var(--line-2);border-radius:10px;padding:10px 12px;gap:8px;width:min(250px,calc(100% - 24px));box-shadow:var(--shadow-md)}
+.legend select{height:30px}
+.ramp{height:6px;border-radius:999px;background:linear-gradient(90deg,var(--s0),var(--s1),var(--s2),var(--s3),var(--s4),var(--s5))}
+.ramp-l{display:flex;justify-content:space-between;font:500 10.5px var(--f-mono);color:var(--muted)}
+.hint{position:absolute;right:12px;bottom:12px;margin:0;font:500 10.5px/1.5 var(--f-mono);color:var(--faint);text-align:right;max-width:220px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:6px;padding:6px 9px;font:500 12px/1.4 var(--f-mono);white-space:nowrap;z-index:3;font-variant-numeric:tabular-nums;box-shadow:var(--shadow-md)}
+.markbar{top:54px;right:12px;border:1px solid color-mix(in srgb,var(--bad) 35%,transparent);background:color-mix(in srgb,var(--bad) 10%,var(--panel));color:var(--bad);border-radius:8px;padding:6px 10px;font:500 12px var(--f-mono)}
+
+/* dossier */
+.eyebrow{margin:0;font:500 11px/1.4 var(--f-mono);letter-spacing:.02em;text-transform:uppercase;color:var(--faint)}
+.d-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.d-head h2{margin:4px 0 0;font:600 24px/1.1 var(--f-body);letter-spacing:-.025em}
+.d-head h2>span{display:block;font:400 13.5px var(--f-body);letter-spacing:0;color:var(--muted);margin-top:6px}
+.grade{flex:none;width:58px;height:58px;border-radius:12px;display:grid;place-content:center;text-align:center;font:600 22px/1 var(--f-body);letter-spacing:-.02em;color:var(--stage-ink);background:var(--stage)}
+.grade small{display:block;font:500 10px var(--f-mono);letter-spacing:0;opacity:.7;margin-top:4px}
+.prices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.prices div{padding:9px 11px;min-width:0;border-left:1px solid var(--line)}
+.prices div:first-child{border-left:0}
+.prices b{display:block;font:600 17px var(--f-mono);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:3px}
+.prices .on{background:var(--panel-2)}
+.prices .on .lbl{color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;height:22px;font:500 11.5px/1 var(--f-body);padding:0 8px;border-radius:999px;background:var(--panel-2);color:var(--ink-2);border:1px solid var(--line);white-space:nowrap}
+.chip.good{background:color-mix(in srgb,var(--good) 12%,transparent);color:var(--good);border-color:transparent}
+.chip.warn{background:color-mix(in srgb,var(--warn) 13%,transparent);color:var(--warn);border-color:transparent}
+.chip.bad{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad);border-color:transparent}
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:112px minmax(0,1fr) 30px;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-2)}
+.track{height:6px;border-radius:999px;background:var(--panel-2);box-shadow:inset 0 0 0 1px var(--line);position:relative}
+.fill{height:100%;border-radius:999px;background:var(--ink)}
+.track .tick{position:absolute;top:-4px;width:2px;height:14px;border-radius:1px;background:var(--faint)}
+.bar output{font:500 12px var(--f-mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.geo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px;margin:0}
+.geo div{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;border-bottom:1px solid var(--line);padding:6px 0}
+.geo dt{color:var(--muted)}.geo dd{margin:0;font:500 12.5px var(--f-mono);font-variant-numeric:tabular-nums}
+.notes{margin:0;padding-left:16px;font-size:13px;line-height:1.5;color:var(--ink-2);display:flex;flex-direction:column;gap:6px}
+.notes li::marker{color:var(--faint)}
+.actions{display:flex;gap:8px}
+#dossier{gap:14px}
+
+/* lists + tables */
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.list li+li button{border-top:1px solid var(--line)}
+.list button{width:100%;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;border:0;background:var(--panel);padding:9px 12px;cursor:pointer;transition:background-color .12s}
+.list button:hover{background:var(--hover)}
+.list button.sel{background:var(--panel-2)}
+.g-sm{display:grid;place-items:center;width:30px;height:24px;border-radius:6px;border:1px solid var(--line-2);font:600 11.5px var(--f-mono);background:var(--panel)}
+.list button.sel .g-sm{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.list .main{min-width:0}
+.list .main b{font-weight:500;font-size:13px}
+.list .main small{display:block;color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list .pr{font:500 13px var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.list .pr small{display:block;font-weight:400;font-size:10.5px;color:var(--faint)}
+.empty{color:var(--muted);font-size:13px;margin:0;padding:12px}
+
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+th{font:500 10.5px var(--f-mono);letter-spacing:.02em;text-transform:uppercase;color:var(--faint);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel-2);white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}
+td.n{font-family:var(--f-mono);text-align:right;white-space:nowrap}
+th.n{text-align:right}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--hover)}
+.cmp td button{border:0;background:none;color:var(--faint);cursor:pointer;padding:0 2px}
+.cmp td button:hover{color:var(--ink)}
+.sub{margin:-6px 0 0;font-size:12.5px;color:var(--muted)}
+.outlook th[scope=row]{font:500 12px var(--f-mono);color:var(--ink);text-transform:none;letter-spacing:0;background:transparent;vertical-align:top}
+.outlook td small{display:block;font:500 11px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px}
+.olink{border:0;background:none;padding:0;cursor:pointer;text-align:left;font-size:12.5px;font-weight:500}
+.olink b{font:600 11px var(--f-mono);margin-right:4px;padding:2px 5px;border-radius:4px;background:var(--panel-2);border:1px solid var(--line)}
+.olink:hover{text-decoration:underline;text-underline-offset:3px}
+.muted-cell{color:var(--faint)}
+
+
+/* app tabs, trip, map chrome */
+.tabbar{padding:12px 12px 0}
+.tabs{display:flex;width:100%}
+.tabs button{flex:1;text-align:center;padding:6px 10px}
+.tabs button[aria-selected="true"]{background:var(--panel);color:var(--ink);box-shadow:0 0 0 1px var(--line-2),var(--shadow-sm)}
+.days{display:flex;width:100%}
+.days button{flex:1;text-align:center;padding:5px 6px;white-space:nowrap}
+.fld-col{display:flex;flex-direction:column;gap:6px}
+.fld-col .seg{align-self:flex-start}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex:none;vertical-align:middle}
+.chk .dot{margin-top:5px}
+.eyebrow .dot{margin:-2px 6px 0 0}
+.stops{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.stops li{display:grid;grid-template-columns:22px minmax(0,1fr) 28px;gap:6px 8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.stops select{grid-column:2/-1}
+.stops li.empty{display:block;color:var(--muted);font-size:13px}
+.stops .num{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--focus);color:var(--panel);font:600 11px var(--f-mono)}
+.stops input[type=time]{justify-self:start;width:120px;height:30px;background:var(--panel);border:1px solid var(--line-2);border-radius:6px;padding:0 6px;font:500 12.5px var(--f-mono);min-width:0}
+.stops select{height:30px;font-size:12.5px;min-width:0;width:100%}
+.stops .note{grid-column:2/-1;height:28px;font-size:12.5px;box-shadow:none}
+.stops .x{border:0;background:none;color:var(--faint);cursor:pointer;height:28px;border-radius:6px}
+.stops .x:hover{color:var(--bad);background:var(--hover)}
+.place .pc-title{margin:2px 0 0;font:600 22px/1.15 var(--f-body);letter-spacing:-.02em}
+.pc-desc{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink-2)}
+.timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.timeline .stop button{width:100%;display:grid;grid-template-columns:62px minmax(0,1fr) 10px;gap:10px;align-items:start;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:9px 11px;cursor:pointer}
+.timeline .stop button:hover{background:var(--hover)}
+.tl-time{font:500 12px/1.6 var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.tl-main b{display:block;font-weight:500;font-size:13px}
+.tl-main small{display:block;font-size:12px;color:var(--muted)}
+.tl-main .warn-txt{color:var(--warn);margin-top:3px}
+.timeline .stop .dot{margin-top:6px}
+.timeline .leg{font:500 11px var(--f-mono);color:var(--focus);padding:6px 0 6px 30px;position:relative}
+.timeline .leg::before{content:"";position:absolute;left:41px;top:0;bottom:0;width:0;border-left:1.5px dashed color-mix(in srgb,var(--focus) 55%,transparent)}
+.timeline .leg{padding-left:52px}
+#mapO{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab;outline-offset:-2px}
+#mapO:active{cursor:grabbing}
+#map{pointer-events:none}
+.tip{left:0;top:0;will-change:transform}
+.scale{right:12px;bottom:40px;flex-direction:column;align-items:flex-end;gap:3px;pointer-events:none}
+.scale i{display:block;height:6px;border:1.5px solid var(--ink);border-top:0;opacity:.7}
+.scale span{font:500 10.5px var(--f-mono);color:var(--muted)}
+.leg-city{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--ink-2)}
+.leg-city span{display:inline-flex;align-items:center;gap:6px}
+.leg-city i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.leg-seat{display:flex;flex-direction:column;gap:8px}
+.mapwrap[data-light="day"]{--bg:#fafafa; --panel:#ffffff; --panel-2:#f5f5f5; --hover:#f4f4f4; --ink:#171717; --ink-2:#3f3f3f; --muted:#6f6f6f; --faint:#a1a1a1;
+  --line:#ebebeb; --line-2:#e2e2e2; --focus:#0070f3; --thumb:#ffffff; --stage:#171717; --stage-ink:#fafafa; --dim:#e2e2e0;
+  --good:#15803d; --warn:#b45309; --bad:#dc2626; --s0:#d6d6d6; --s1:#93a5d7; --s2:#8669c9; --s3:#d25c7b; --s4:#eb872b; --s5:#f2b015;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04); --shadow-md:0 4px 12px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236f6f6f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");--geo-ground:#efefec;--geo-area:#e5e4e0;--geo-water:#d3e0ea;--geo-road:#ffffff;--geo-casing:#d9d9d6;--geo-strip:#ffffff;--geo-strip-casing:#a9a9a6;--geo-glow:#f08733;--geo-free:#e2e2df;--geo-rail:#7f93c9;--geo-top:#ffffff;--geo-side:#dcdcd9;--geo-edge:#c9c9c6;--geo-shadow:rgba(0,0,0,.07);--geo-label:#5a5a5a;--geo-label-strong:#171717;--geo-halo:#efefec;--geo-walk:#a8a8a5;color-scheme:light}
+.mapwrap[data-light="night"]{--bg:#000000; --panel:#0a0a0a; --panel-2:#141414; --hover:#161616; --ink:#ededed; --ink-2:#c9c9c9; --muted:#a1a1a1; --faint:#6b6b6b;
+  --line:#1f1f1f; --line-2:#2b2b2b; --focus:#52a8ff; --thumb:#ededed; --stage:#ededed; --stage-ink:#0a0a0a; --dim:#1e1e1e;
+  --good:#4ade80; --warn:#fbbf24; --bad:#f87171; --s0:#2c2c2c; --s1:#3957a6; --s2:#7859c8; --s3:#d5557a; --s4:#f08733; --s5:#ffc93c;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.6); --shadow-md:0 8px 24px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  --chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23a1a1a1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");--geo-ground:#0a0a0a;--geo-area:#111111;--geo-water:#0c1620;--geo-road:#1c1c1c;--geo-casing:#0a0a0a;--geo-strip:#4a3216;--geo-strip-casing:#0a0a0a;--geo-glow:#f08733;--geo-free:#242424;--geo-rail:#4a6bc4;--geo-top:#181818;--geo-side:#0f0f0f;--geo-edge:#2e2e2e;--geo-shadow:rgba(0,0,0,0);--geo-label:#9a9a9a;--geo-label-strong:#ededed;--geo-halo:#0a0a0a;--geo-walk:#4a4a4a;color-scheme:dark}
+
+@media (max-width:1240px){.app{grid-template-columns:270px minmax(0,1fr) 340px}}
+@media (max-width:980px){
+  html,body{height:auto}
+  .app{height:auto;grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "map" "side" "ctl"}
+  .mapwrap{height:min(68vh,600px);min-height:380px}
+  .hint{display:none}
+  .panel{overflow:visible}
+  .hide-sm{display:none}
+}
+@media (max-width:560px){
+  .prices{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .prices div:nth-child(3){grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}
+  .bar{grid-template-columns:96px minmax(0,1fr) 28px}
+  .geo{grid-template-columns:minmax(0,1fr)}
+  .search{right:12px;top:54px}
+  .zoom #zin,.zoom #zout{display:none}
+  .markbar{top:96px}
+  .tag{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <span class="glyph" aria-hidden="true"></span>
+      <h1>Seat Scout</h1>
+      <span class="slash" aria-hidden="true">/</span>
+      <span class="crumb">John Mayer at Sphere</span>
+      <span class="slash hide-sm" aria-hidden="true">/</span>
+      <span class="crumb hide-sm">Las Vegas</span>
+      <span class="tag">April 2027 · 6 shows</span>
+    </div>
+    <div class="top-ctl">
+      <label class="fld"><span>Show</span><select id="show"></select></label>
+      <div class="fld"><span id="chLbl">Buying in</span><div class="seg" id="channel" role="radiogroup" aria-labelledby="chLbl"></div></div>
+      <label class="fld"><span>Tickets</span><select id="qty"></select></label>
+    </div>
+  </header>
+
+  <aside class="panel controls" aria-label="Controls">
+    <div class="tabbar"><div class="seg tabs" id="tabs" role="tablist">
+      <button type="button" role="tab" data-tab="seats" aria-selected="true">Seats</button>
+      <button type="button" role="tab" data-tab="trip" aria-selected="false">Trip</button>
+      <button type="button" role="tab" data-tab="map" aria-selected="false">Map</button>
+    </div></div>
+    <div data-pane="seats">
+    <div class="grp">
+      <h3>Your buy</h3>
+      <div class="sl"><label for="qMin">You reach the seat map</label><output id="o_qMin"></output><input type="range" id="qMin" min="0" max="60" step="5"><p class="help">Minutes after the sale window opens. Queues for a six-show run are long; 10–30 minutes is typical.</p></div>
+      <label class="chk"><input type="checkbox" id="together"> Seats must be side by side</label>
+      <label class="chk"><input type="checkbox" id="sim"> Show a simulated sell-through</label>
+      <div class="row-btns">
+        <button class="btn" type="button" id="reshuffle">Reshuffle simulation</button>
+        <button class="btn" type="button" id="clearMarks">Clear my marks</button>
+      </div>
+      <p class="help">Gray seats are a plausible guess at what's gone, not live data. During the sale, use Mark taken on the map to gray out rows Ticketmaster shows as sold, and the picks re-rank.</p>
+      <div class="sl"><label for="minChance">Hide rows below</label><output id="o_minChance"></output><input type="range" id="minChance" min="5" max="80" step="5"><p class="help">Keeps lucky long shots out of the picks, even when the simulation happens to leave them open.</p></div>
+    </div>
+    <div class="grp">
+      <div class="hdr"><h3>What matters to you</h3></div>
+      <div class="presets" id="presets"></div>
+      <div class="sl"><label for="w_band">See John &amp; the band</label><output id="o_band"></output><input type="range" id="w_band" min="0" max="100"></div>
+      <div class="sl"><label for="w_imm">Full-dome visuals</label><output id="o_imm"></output><input type="range" id="w_imm" min="0" max="100"></div>
+      <div class="sl"><label for="w_vrt">Avoid vertigo</label><output id="o_vrt"></output><input type="range" id="w_vrt" min="0" max="100"></div>
+      <div class="sl"><label for="w_cmf">Comfort &amp; haptics</label><output id="o_cmf"></output><input type="range" id="w_cmf" min="0" max="100"></div>
+      <div class="sl"><label for="w_snd">Sound</label><output id="o_snd"></output><input type="range" id="w_snd" min="0" max="100"><p class="help">Sphere's beam-steered audio is strong everywhere, so this rarely separates seats.</p></div>
+    </div>
+    <div class="grp">
+      <h3>You</h3>
+      <div class="sl"><label for="tol">Vertigo tolerance</label><output id="o_tol"></output><input type="range" id="tol" min="0" max="100"><p class="help">Seats with a vertigo risk above this line get penalized.</p></div>
+      <div class="sl"><label for="height">Your height</label><output id="o_height"></output><input type="range" id="height" min="60" max="82"><p class="help">Changes GA sightlines over the crowd and legroom in the steep upper levels.</p></div>
+      <label class="chk"><input type="checkbox" id="aisle"> Prefer aisle seats</label>
+      <label class="chk"><input type="checkbox" id="standOK"> Happy to stand all night (GA)</label>
+      <label class="chk"><input type="checkbox" id="ga"> Include GA floor (if offered)</label>
+      <div class="sl"><label for="ov">100-level overhang starts at row</label><output id="o_ov"></output><input type="range" id="ov" min="18" max="32"><p class="help">Reports range from row 24 to row 30. Rows behind it lose the top of the dome.</p></div>
+    </div>
+    <div class="grp">
+      <h3>Money</h3>
+      <div class="sl"><label for="budget">Max per ticket</label><output id="o_budget"></output><input type="range" id="budget" min="129" max="1500" step="10"></div>
+      <label class="chk"><input type="checkbox" id="platOn"> Price Platinum-zone seats at Platinum rates</label>
+      <div class="sl"><label for="platMult">Platinum markup</label><output id="o_platMult"></output><input type="range" id="platMult" min="1.5" max="5" step="0.1"><p class="help">Ticketmaster's dynamic pricing. The Eagles' opener ran from $491 to $12,600 with Platinum included.</p></div>
+      <div class="sl"><label for="heat">Resale heat</label><output id="o_heat"></output><input type="range" id="heat" min="0.8" max="3" step="0.05"><p class="help">Base markup over face on the resale market. The best seats and hottest nights scale up from here.</p></div>
+    </div>
+    <div class="grp">
+      <h3>Filters</h3>
+      <label class="chk"><input type="checkbox" id="hideVip"> Hide likely VIP / package holds</label>
+      <label class="chk"><input type="checkbox" id="dimBudget"> Gray out seats over budget</label>
+      <label class="chk"><input type="checkbox" id="hideLong"> Hide long shots for this sale window</label>
+    </div>
+    <div class="grp">
+      <details class="method">
+        <summary>How the model works</summary>
+        <p><b>Layout.</b> Floor plus 100 (101–110, ~37 rows), 200 (201–211, 21 rows), 300 (301–311, 20 rows) and 400 (403–409, 25 rows), placed at their published angles off the stage centerline. Seats per row are modeled from published row maximums, so counts and seat numbering are close but not exact. Seat 1 is modeled on your left as you face the stage.</p>
+        <p><b>Scores.</b> Each seat gets an estimated distance and height from the stage. Band view falls with distance, side angle and steep downward sightlines. Dome visuals peak in center 300 and mid 200, and drop hard under the 200 overhang. Vertigo risk blends height, rake, front-row exposure and screen motion. Comfort counts haptic seats (200–400 and the back half of 100), legroom for your height, stairs and aisles.</p>
+        <p><b>Prices.</b> Face values are estimates anchored on Mayer's announced $129 floor and Dead &amp; Company's all-in Sphere tiers ($145 / $195 / $295 / $395). Those standard prices line up with the Eagles' Sphere tiers ($175 / $225 / $325 / $425). The catch is Platinum: the best center blocks are mostly sold at dynamic prices, so by default those seats show a Platinum estimate (standard price × markup). Resale = standard price × heat × seat desirability × night demand.</p>
+        <p><b>Sources.</b></p>
+        <ul>
+          <li><a href="https://news3lv.com/news/local/john-mayer-headlining-new-sphere-las-vegas-residency-music-entertainment-nevada-concerts-2027" target="_blank" rel="noopener">News 3 LV: tickets from $129</a></li>
+          <li><a href="https://www.jambase.com/article/john-mayer-sphere-las-vegas-april-2027" target="_blank" rel="noopener">JamBase: dates and presale windows</a></li>
+          <li><a href="https://liveforlivemusic.com/news/dead-and-company-2025-sphere-residency-recap/" target="_blank" rel="noopener">L4LM: Dead &amp; Co Sphere price tiers</a></li>
+          <li><a href="https://www.grimygoods.com/2024/06/13/eagles-at-sphere-las-vegas-how-much-are-tickets-how-to-get-presale" target="_blank" rel="noopener">Grimy Goods: Eagles standard tiers</a></li>
+          <li><a href="https://neon.reviewjournal.com/?p=3073201" target="_blank" rel="noopener">Review-Journal: Eagles face values incl. Platinum</a></li>
+          <li><a href="https://seatgeek.ca/blog/best-seats-at-the-sphere-for-las-vegas-concerts-sections-views-and-tips" target="_blank" rel="noopener">SeatGeek: overhang, haptics, sweet spots</a></li>
+          <li><a href="https://3ddigitalvenue.com/3dmap/clients/sphere/" target="_blank" rel="noopener">3D Digital Venue: sections and angles</a></li>
+          <li><a href="https://www.mapaplan.com/seating-plan/las-vegas-sphere-arena-msg-dome-globe-detailed-seat-row-numbers-chart/las-vegas-sphere-msg-seating-chart-plan.htm" target="_blank" rel="noopener">Mapaplan: rows and seats per row</a></li>
+        </ul>
+        <p>Estimates only. Confirm every seat and price in Ticketmaster before you buy.</p>
+      </details>
+      <button class="btn" id="reset" type="button">Reset all settings</button>
+    </div>
+    </div>
+
+    <div data-pane="trip" hidden>
+      <div class="grp">
+        <div class="hdr"><h3>Your Vegas days</h3><span class="tag" id="tripBadge">Example plan</span></div>
+        <div class="seg days" id="dayTabs" role="radiogroup" aria-label="Trip day"></div>
+        <ol class="stops" id="stops"></ol>
+        <div class="row-btns">
+          <button class="btn primary" type="button" id="addStop">Add stop</button>
+          <button class="btn" type="button" id="clearDay">Clear day</button>
+          <button class="btn" type="button" id="resetTrip">Reset example</button>
+        </div>
+        <p class="help">Click any building or pin on the map to add it to a day. Stops sort by time, and the route with walk times draws on the map. Plans are saved in this browser for each show night.</p>
+      </div>
+    </div>
+
+    <div data-pane="map" hidden>
+      <div class="grp">
+        <h3>Go to</h3>
+        <div class="row-btns">
+          <button class="btn" type="button" data-fly="seats">My seats</button>
+          <button class="btn" type="button" data-fly="campus">Sphere & Venetian</button>
+          <button class="btn" type="button" data-fly="strip">The Strip</button>
+          <button class="btn" type="button" data-fly="city">Airport to downtown</button>
+        </div>
+      </div>
+      <div class="grp">
+        <h3>Layers</h3>
+        <label class="chk"><input type="checkbox" id="ly_seats"> Seating chart inside Sphere</label>
+        <label class="chk"><input type="checkbox" id="ly_stay"><span class="dot" style="background:var(--s2)"></span> Hotels & casinos</label>
+        <label class="chk"><input type="checkbox" id="ly_food"><span class="dot" style="background:var(--s4)"></span> Food & shopping</label>
+        <label class="chk"><input type="checkbox" id="ly_sights"><span class="dot" style="background:var(--s3)"></span> Sights</label>
+        <label class="chk"><input type="checkbox" id="ly_transit"><span class="dot" style="background:var(--s1)"></span> Monorail, airport & rideshare</label>
+        <label class="chk"><input type="checkbox" id="ly_trip"> Trip route & walk times</label>
+        <label class="chk"><input type="checkbox" id="ly_streets"> Street names</label>
+      </div>
+      <div class="grp">
+        <h3>Look</h3>
+        <div class="fld-col"><span class="lbl">Buildings</span><div class="seg" id="detailSeg"><button type="button" data-v="flat">Flat</button><button type="button" data-v="3d">3D massing</button></div></div>
+        <div class="fld-col"><span class="lbl">Lighting</span><div class="seg" id="lightSeg"><button type="button" data-v="auto">Match theme</button><button type="button" data-v="day">Day</button><button type="button" data-v="night">Night</button></div></div>
+        <div class="fld-col"><span class="lbl">Labels</span><div class="seg" id="labelSeg"><button type="button" data-v="less">Landmarks</button><button type="button" data-v="more">Everything</button></div></div>
+        <p class="help">Drawn from real coordinates, with landmarks placed to within about a block. This isn't satellite imagery, which artifacts can't load. Building heights are approximate. Check monorail and venue hours before you go.</p>
+      </div>
+    </div>
+  </aside>
+
+  <main class="mapwrap" id="mapwrap">
+    <canvas id="map" aria-hidden="true"></canvas>
+    <canvas id="mapO" tabindex="0" aria-label="Zoomable map of Sphere and Las Vegas. Drag to pan, scroll or pinch to zoom, click a seat or building for details."></canvas>
+    <form class="ov search" id="searchForm" autocomplete="off">
+      <input type="text" id="search" placeholder="Seat 206 11 8, or a place" aria-label="Find a seat or a place">
+      <button type="submit" class="btn">Go</button>
+    </form>
+    <div class="ov zoom glass">
+      <button type="button" id="zin" aria-label="Zoom in">+</button>
+      <button type="button" id="zout" aria-label="Zoom out">−</button>
+      <button type="button" id="zfit" aria-label="Zoom to the seating chart">Seats</button>
+      <button type="button" id="zcity" aria-label="Zoom out to the Strip">Strip</button>
+      <button type="button" id="markBtn" aria-pressed="false">Mark taken</button>
+    </div>
+    <div class="ov markbar" id="markBar" hidden>Tap a row to mark it sold. Tap again to undo.</div>
+    <div class="ov legend glass">
+      <div id="legCity" class="leg-city" hidden>
+        <span><i style="background:var(--s5)"></i>Sphere</span><span><i style="background:var(--s2)"></i>Hotels</span><span><i style="background:var(--s4)"></i>Food</span><span><i style="background:var(--s3)"></i>Sights</span><span><i style="background:var(--s1)"></i>Transit</span>
+      </div>
+      <div id="legSeat" class="leg-seat">
+      <label class="lbl" for="colorBy">Color seats by</label>
+      <select id="colorBy">
+        <option value="overall">Overall grade</option>
+        <option value="value">Value for money</option>
+        <option value="band">Band view</option>
+        <option value="imm">Dome visuals</option>
+        <option value="vrt">Vertigo risk</option>
+        <option value="price">Price</option>
+        <option value="odds">Odds still available</option>
+      </select>
+      <div class="ramp"></div>
+      <div class="ramp-l"><span id="lgLo"></span><span id="lgHi"></span></div>
+      </div>
+    </div>
+    <div class="ov scale" id="scale" aria-hidden="true"><i></i><span></span></div>
+    <p class="hint">Scroll to zoom · drag to pan · zoom out to see Las Vegas</p>
+    <div class="tip" id="tip" hidden></div>
+  </main>
+
+  <aside class="panel side" aria-label="Details">
+    <div data-view="trip" hidden>
+      <section id="placeCard" class="place"></section>
+      <section id="timeline"></section>
+    </div>
+    <div data-view="seats">
+    <section id="dossier"></section>
+    <section id="compareSec" hidden>
+      <h3>Compare</h3>
+      <div class="tbl-wrap"><table class="cmp"><thead><tr><th>Seat</th><th class="n">Grade</th><th class="n">Price</th><th class="n">Band</th><th class="n">Dome</th><th class="n">Vertigo</th><th></th></tr></thead><tbody id="cmpBody"></tbody></table></div>
+    </section>
+    <section class="outlook">
+      <h3>Realistic outlook</h3>
+      <p class="sub" id="outlookSub"></p>
+      <div class="tbl-wrap"><table><thead><tr><th>Level</th><th>Likely (50%+)</th><th>Stretch (25–50%)</th></tr></thead><tbody id="outlook"></tbody></table></div>
+    </section>
+    <section>
+      <div class="hdr"><h3 id="picksTitle">Best rows in budget</h3>
+        <select id="pickSort" aria-label="Rank picks by">
+          <option value="overall">By grade</option><option value="value">By value</option><option value="band">By band view</option><option value="imm">By dome visuals</option>
+        </select></div>
+      <ol class="list" id="picks"></ol>
+    </section>
+    <section>
+      <h3>Every price tier</h3>
+      <div class="tbl-wrap"><table><thead><tr><th>Tier</th><th class="n">Face</th><th class="n">Resale</th><th class="n">Best</th><th class="n">Odds</th></tr></thead><tbody id="tiers"></tbody></table></div>
+    </section>
+    </div>
+  </aside>
+</div>
+
+<script>
+(() => {
+const DEG = Math.PI / 180;
+const clamp = (v, a = 0, b = 100) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const range = (a, b) => { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; };
+const $ = s => document.querySelector(s);
+const money = v => '$' + Math.round(v).toLocaleString('en-US');
+const round5 = v => Math.round(v / 5) * 5;
+
+const SHOWS = [
+  { id: '0408', label: 'Thu Apr 8 · opening night', mult: 1.15 },
+  { id: '0410', label: 'Sat Apr 10', mult: 1.15 },
+  { id: '0411', label: 'Sun Apr 11', mult: 1.0 },
+  { id: '0415', label: 'Thu Apr 15', mult: 0.9 },
+  { id: '0417', label: 'Sat Apr 17', mult: 1.1 },
+  { id: '0418', label: 'Sun Apr 18 · closing night', mult: 1.15 },
+];
+const CHANNELS = [
+  { id: 'artist', label: 'Artist presale', sub: 'Wed 10/7 · 10am PT' },
+  { id: 'sirius', label: 'SiriusXM', sub: 'Thu 10/8' },
+  { id: 'public', label: 'Public onsale', sub: 'Fri 10/9 · 10am PT' },
+  { id: 'resale', label: 'Resale', sub: 'any time' },
+];
+const PRESETS = {
+  balanced: { label: 'Balanced', w: { band: 35, imm: 30, snd: 10, cmf: 10, vrt: 15 } },
+  close: { label: 'See John up close', w: { band: 60, imm: 15, snd: 10, cmf: 5, vrt: 10 } },
+  sphere: { label: 'Full Sphere show', w: { band: 15, imm: 55, snd: 10, cmf: 10, vrt: 10 } },
+  calm: { label: 'Easy on vertigo', w: { band: 30, imm: 20, snd: 10, cmf: 15, vrt: 25 }, tol: 40 },
+};
+const DEFAULTS = { show: '0410', channel: 'artist', qty: 4, budget: 800, w: { ...PRESETS.balanced.w }, tol: 60, height: 76,
+  aisle: false, standOK: true, ga: true, ov: 24, heat: 1.15, platOn: true, platMult: 2.5, colorBy: 'overall', hideVip: true, dimBudget: true, hideLong: false, pickSort: 'overall',
+  together: true, qMin: 15, minChance: 25, sim: true, seed: 1, taken: {},
+  tab: 'seats', layers: { seats: true, stay: true, food: true, sights: true, transit: true, trip: true, streets: true }, detail: '3d', mapLight: 'auto', labels: 'more', trips: {} };
+const KEY = 'seat-scout-v2';
+let S, markMode = false;
+try { S = Object.assign(structuredClone(DEFAULTS), JSON.parse(localStorage.getItem(KEY) || '{}')); S.w = Object.assign({ ...DEFAULTS.w }, S.w); S.taken = S.taken || {}; S.layers = Object.assign({ ...DEFAULTS.layers }, S.layers); S.trips = S.trips || {}; }
+catch (e) { S = structuredClone(DEFAULTS); }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+
+/* ---------- Venue model ---------- */
+const LEVELS = [
+  { id: 'GA', name: 'GA Floor', r0: 5, r1: 16, rows: 6, rake: 0, nums: ['GA'], edges: [-50, 50], ga: true },
+  { id: '100', name: '100 Level', r0: 18, r1: 44, rows: 37, minS: 12, maxS: 20, rake: 20, nums: range(101, 110), centers: range(0, 9).map(k => -66 + k * 132 / 9) },
+  { id: '200', name: '200 Level', r0: 46, r1: 60, rows: 21, minS: 14, maxS: 21, rake: 28, nums: range(201, 211), centers: [-48, -40, -30, -20, -10, 0, 10, 20, 30, 40, 48] },
+  { id: '300', name: '300 Level', r0: 62, r1: 75, rows: 20, minS: 18, maxS: 27, rake: 33, nums: range(301, 311), centers: [-41, -35, -26, -17, -9, 0, 9, 17, 26, 35, 41] },
+  { id: '400', name: '400 Level', r0: 77, r1: 94, rows: 25, minS: 20, maxS: 32, rake: 37, nums: range(403, 409), centers: [-26, -18, -9, 0, 9, 18, 26] },
+];
+// estimated real geometry (meters): plan distance and height above stage, per row
+const GEO = { GA: [4, 2, 0, 0], '100': [13, .9, .5, .33], '200': [34, .8, 15, .48], '300': [44, .75, 27, .52], '400': [54, .75, 39.5, .6] };
+const GA_ROW = ['At the rail', 'Front third', 'Front-middle', 'Middle', 'Back-middle', 'Back of floor'];
+
+function edgesFrom(c) {
+  const e = [c[0] - (c[1] - c[0]) / 2];
+  for (let i = 0; i < c.length - 1; i++) e.push((c[i] + c[i + 1]) / 2);
+  e.push(c[c.length - 1] + (c[c.length - 1] - c[c.length - 2]) / 2);
+  return e;
+}
+const SEATS = [], SECS = [], ROWS = [];
+LEVELS.forEach(L => {
+  if (!L.edges) L.edges = edgesFrom(L.centers);
+  if (!L.centers) L.centers = [0];
+  L.rowDepth = (L.r1 - L.r0) / L.rows;
+  const spans = L.nums.map((_, i) => L.edges[i + 1] - L.edges[i]);
+  const ref = spans.reduce((a, b) => a + b, 0) / spans.length;
+  const g = GEO[L.id];
+  L.secs = L.nums.map((num, i) => {
+    const sec = { num: String(num), L, a0: L.edges[i], a1: L.edges[i + 1], c: L.centers[i], rows: [] };
+    const gap = L.ga ? 0 : 0.6;
+    for (let r = 1; r <= L.rows; r++) {
+      const t = (r - 1) / Math.max(1, L.rows - 1);
+      const n = L.ga ? 1 : Math.max(6, Math.round(lerp(L.minS, L.maxS, t) * (spans[i] / ref)));
+      const rad = L.r0 + (r - 0.5) * L.rowDepth;
+      const row = { r, n, rad, start: SEATS.length, sec, b0: sec.a0 + gap, b1: sec.a1 - gap };
+      const step = (row.b1 - row.b0) / n;
+      for (let k = 0; k < n; k++) {
+        const th = L.ga ? 0 : row.b0 + (k + 0.5) * step;
+        SEATS.push({ id: SEATS.length, L, sec, row, r, num: k + 1, n, th, rad,
+          x: rad * Math.sin(th * DEG), y: rad * Math.cos(th * DEG),
+          D: g[0] + (r - 1) * g[1], H: g[2] + (r - 1) * g[3], aisle: !L.ga && (k === 0 || k === n - 1) });
+      }
+      sec.rows.push(row); ROWS.push(row);
+    }
+    SECS.push(sec);
+    return sec;
+  });
+});
+const SEC_BY_NUM = Object.fromEntries(SECS.map(s => [s.num, s]));
+
+/* ---------- Scoring ---------- */
+function score(s) {
+  const L = s.L.id, h = S.height, ov = S.ov, a = Math.abs(s.th);
+  const dist = Math.hypot(s.D, s.H);
+  const down = Math.atan2(s.H, s.D) / DEG;
+  const t = (s.r - 1) / Math.max(1, s.L.rows - 1);
+  const under = L === '100' && s.r >= ov;
+
+  let band = 100 - (dist - 8) - Math.max(0, a - 20) * 0.45 - Math.max(0, down - 32) * 0.6;
+  if (L === 'GA') band -= clamp((74 - h) * 1.8, 0, 30) + (s.r - 1) * 1.5;
+
+  let imm;
+  if (L === 'GA') imm = 40 + (s.r - 1) * 2;
+  else if (L === '100') imm = under ? 46 - (s.r - ov) * 1.6 : 58 + (s.r - 1) * 0.7;
+  else if (L === '200') imm = 84 + t * 6;
+  else if (L === '300') imm = 95 - t * 3;
+  else imm = 91 - t * 6;
+  imm -= a * 0.16;
+
+  const snd = ({ GA: 86, '100': 91, '200': 95, '300': 93, '400': 90 })[L] - a * 0.08 - (under ? 3 : 0);
+
+  const tall = clamp((h - 70) / 8, 0, 1);
+  const haptic = L !== 'GA' && (L !== '100' || s.r >= 19);
+  let cmf;
+  if (L === 'GA') cmf = S.standOK ? 70 : 35;
+  else {
+    cmf = 72 + (haptic ? 14 : 0) - ({ '100': 3, '200': 5, '300': 8, '400': 14 })[L] * tall - (L === '400' ? 5 : L === '300' ? 2 : 0)
+      + (s.aisle ? (S.aisle ? 10 : 3) : 0);
+  }
+
+  let vr = L === 'GA' ? 3 : s.H * 0.9 + s.L.rake * 0.8 + (L !== '100' ? ([12, 7, 3][s.r - 1] || 0) : 0) + clamp(imm) * 0.08;
+  vr = clamp(vr);
+  const vc = clamp(100 - Math.max(0, vr - S.tol) * 1.6);
+
+  band = clamp(band); imm = clamp(imm); cmf = clamp(cmf);
+  const W = S.w, tw = (W.band + W.imm + W.snd + W.cmf + W.vrt) || 1;
+  s.overall = (W.band * band + W.imm * imm + W.snd * snd + W.cmf * cmf + W.vrt * vc) / tw;
+  Object.assign(s, { dist, down, band, imm, snd: clamp(snd), cmf, vr, vc, haptic, under });
+}
+
+function priceTier(s) {
+  const L = s.L.id, n = +s.sec.num, r = s.r, ov = S.ov;
+  if (L === 'GA') return [299, 'GA floor · standing'];
+  if (L === '100') {
+    const c = n >= 104 && n <= 107, e = n === 101 || n === 110;
+    if (r >= ov) return c ? [229, '100 center · under overhang'] : e ? [179, '100 ends · under overhang'] : [199, '100 sides · under overhang'];
+    return c ? [399, '100 center · 104–107'] : e ? [279, '100 ends · 101, 110'] : [349, '100 sides · 102–103, 108–109'];
+  }
+  if (L === '200') {
+    if (n >= 204 && n <= 208) return r <= 12 ? [399, '200 center · rows 1–12'] : [369, '200 center · rows 13–21'];
+    if (n === 201 || n === 211) return [279, '200 ends · 201, 211'];
+    return [329, '200 wings · 202–203, 209–210'];
+  }
+  if (L === '300') {
+    const back = r >= 15;
+    let p, nm;
+    if (n >= 305 && n <= 307) { p = 299; nm = '300 director · 305–307'; }
+    else if (n === 304 || n === 308) { p = 259; nm = '300 inner · 304, 308'; }
+    else if (n === 301 || n === 311) { p = 189; nm = '300 ends · 301, 311'; }
+    else { p = 219; nm = '300 wings · 302–303, 309–310'; }
+    return back ? [p - 20, nm + ' · rows 15+'] : [p, nm + ' · rows 1–14'];
+  }
+  const front = r <= 12, rr = front ? ' · rows 1–12' : ' · rows 13–25';
+  if (n >= 405 && n <= 407) return [front ? 199 : 169, '400 center · 405–407' + rr];
+  if (n === 404 || n === 408) return [front ? 169 : 149, '400 inner · 404, 408' + rr];
+  return [front ? 149 : 129, '400 ends · 403, 409' + rr];
+}
+
+/* Availability: probability a seat is still open when you reach the seat map.
+   Sell rate rises steeply with desirability; cheap seats also move; Platinum moves slowly;
+   time is measured from artist-presale open, with later windows inheriting earlier sell-through. */
+const CH_T = { artist: 0, sirius: 90, public: 180 };
+let TAKEN = new Set();
+const rowKey = row => row.sec.num + '-' + row.r;
+const holdZone = s => { const L = s.L.id, n = +s.sec.num; return (L === '100' && n >= 103 && n <= 108) || (L === '200' && n >= 204 && n <= 208); };
+function oddsFor(s) {
+  if (TAKEN.has(rowKey(s.row))) return 0;
+  if (S.channel === 'resale') return s.L.ga ? 0.9 : 0.35;
+  if (s.vip) return 0;
+  const tEff = 30 * Math.log(1 + (S.qMin + 2 + CH_T[S.channel]) / 30);   // +2: the people ahead of you in the first wave
+  const d = s.pct, cheap = clamp((450 - s.std) / 320, 0, 1);
+  let rate = 0.176 * Math.pow(d, 2.5) + 0.02 * cheap;
+  if (s.platPriced) rate *= 0.3;
+  let p = Math.exp(-rate * tEff);
+  if (s.plat && !s.platPriced) p *= 0.3;   // only a thin slice of standard seats exists in Platinum zones
+  if (holdZone(s)) p *= 0.92;              // artist, label, promoter and sponsor holds
+  return clamp(p, 0, 1);
+}
+const hash = (a, b) => { let x = Math.imul(a ^ 0x9e3779b9, 374761393) ^ Math.imul(b + 0x85ebca6b, 668265263); x = Math.imul(x ^ (x >>> 13), 1274126177); x ^= x >>> 16; return (x >>> 0) / 4294967296; };
+function chanceRun(ps, q) {
+  let dp = new Float64Array(q); dp[0] = 1; let done = 0;
+  for (const p of ps) {
+    const nd = new Float64Array(q);
+    for (let j = 0; j < q; j++) { const m = dp[j]; if (!m) continue; nd[0] += m * (1 - p); if (j + 1 >= q) done += m * p; else nd[j + 1] += m * p; }
+    dp = nd;
+  }
+  return done;
+}
+const oddsLabel = p => p >= 0.65 ? ['Good odds', 'good'] : p >= 0.35 ? ['Fair odds', 'warn'] : p >= 0.12 ? ['Tough', 'warn'] : ['Long shot', 'bad'];
+const GRADES = [[86, 'A+'], [82, 'A'], [78, 'A−'], [74, 'B+'], [70, 'B'], [66, 'B−'], [62, 'C+'], [58, 'C'], [54, 'C−'], [0, 'D']];
+const grade = v => GRADES.find(g => v >= g[0])[1];
+const vLabel = v => v < 25 ? 'Low' : v < 45 ? 'Mild' : v < 65 ? 'Moderate' : v < 80 ? 'High' : 'Severe';
+
+let TIERS = [];
+function recompute() {
+  const show = SHOWS.find(x => x.id === S.show) || SHOWS[0];
+  const showIdx = SHOWS.indexOf(show);
+  TAKEN = new Set(S.taken[S.show] || []);
+  for (const s of SEATS) {
+    score(s);
+    const [p, tier] = priceTier(s);
+    const L = s.L.id, n = +s.sec.num, r = s.r;
+    s.vip = (L === '100' && n >= 104 && n <= 107 && r <= 8) || (L === '200' && n >= 205 && n <= 207 && r <= 6) ||
+      (L === '200' && (n === 204 || n === 208) && r <= 3) || (L === '300' && n >= 305 && n <= 307 && r <= 3);
+    s.plat = (L === '100' && n >= 103 && n <= 108 && r <= 18 && r < S.ov) || (L === '200' && n >= 204 && n <= 208 && r <= 12) || (L === '300' && n >= 305 && n <= 307 && r <= 6);
+    s.std = p;
+    s.platPriced = s.plat && S.platOn;
+    s.face = s.platPriced ? round5(p * S.platMult) : p;
+    s.tier = s.platPriced ? tier + ' · Platinum' : tier;
+  }
+  const N = SEATS.length;
+  const ord = SEATS.map(s => s.id).sort((a, b) => SEATS[a].overall - SEATS[b].overall);
+  ord.forEach((id, k) => { SEATS[id].pct = k / (N - 1); });
+  for (const s of SEATS) {
+    s.resale = Math.max(s.std, round5(s.std * S.heat * (0.8 + 1.2 * s.pct) * show.mult));
+    s.price = S.channel === 'resale' ? s.resale : s.face;
+    s.odds = oddsFor(s);
+    const pairId = s.L.ga ? s.id : s.row.start + Math.floor((s.num - 1) / 2);   // people buy in pairs, so pairs share a fate
+    s.open = s.odds > 0 && (!S.sim || hash(pairId, S.seed * 7919 + showIdx * 31 + (CH_T[S.channel] || 0) + S.qMin) < s.odds);
+    s.valRaw = (s.overall * s.overall) / s.price;
+  }
+  const ordV = SEATS.map(s => s.id).sort((a, b) => SEATS[a].valRaw - SEATS[b].valRaw);
+  ordV.forEach((id, k) => { SEATS[id].value = 100 * k / (N - 1); });
+
+  for (const s of SEATS) {
+    s.active = (S.ga || s.L.id !== 'GA') && !(S.hideVip && s.vip && S.channel !== 'resale') && !(S.hideLong && s.odds < 0.12);
+    s.inBudget = s.price <= S.budget;
+    s.cv = colorVal(s);
+  }
+  let lo = Infinity, hi = -Infinity;
+  for (const s of SEATS) { if (s.cv < lo) lo = s.cv; if (s.cv > hi) hi = s.cv; }
+  // rank-based color so the ramp spreads evenly across the house
+  const ordC = SEATS.map(s => s.id).sort((a, b) => SEATS[a].cv - SEATS[b].cv);
+  ordC.forEach((id, k) => { SEATS[id].ct = k / (N - 1); });
+  const q = S.together ? S.qty : 1;
+  for (const row of ROWS) {
+    let sum = 0, cnt = 0, act = 0, bud = 0;
+    const ps = [];
+    for (let k = 0; k < row.n; k++) {
+      const s = SEATS[row.start + k];
+      if (s.active && s.open) { sum += s.ct; cnt++; act++; if (s.inBudget) bud++; }
+      ps.push(s.active && s.inBudget ? s.odds : 0);
+    }
+    row.ct = cnt ? sum / cnt : 0; row.active = act > 0; row.inBudget = bud > 0;
+    row.chance = row.sec.L.ga ? ps[0] : chanceRun(ps, Math.min(q, row.n));
+  }
+  setLegend(lo, hi);
+
+  const tm = new Map();
+  for (const s of SEATS) {
+    if (!S.ga && s.L.id === 'GA') continue;
+    let t = tm.get(s.tier);
+    if (!t) { t = { name: s.tier, face: s.face, res: [], best: null, odds: [], count: 0 }; tm.set(s.tier, t); }
+    t.count++; t.res.push(s.resale); t.odds.push(s.odds);
+    if (!s.vip || !S.hideVip) { if (!t.best || s.overall > t.best.overall) t.best = s; }
+  }
+  TIERS = [...tm.values()].map(t => {
+    t.res.sort((a, b) => a - b); t.odds.sort((a, b) => a - b);
+    t.resMed = t.res[Math.floor(t.res.length / 2)]; t.oddsMed = t.odds[Math.floor(t.odds.length / 2)];
+    return t;
+  }).filter(t => t.best).sort((a, b) => b.face - a.face || b.best.overall - a.best.overall);
+}
+
+function colorVal(s) {
+  switch (S.colorBy) {
+    case 'value': return s.value;
+    case 'band': return s.band;
+    case 'imm': return s.imm;
+    case 'vrt': return 100 - s.vr;
+    case 'price': return s.price;
+    case 'odds': return s.odds * 100;
+    default: return s.overall;
+  }
+}
+function setLegend(lo, hi) {
+  const m = S.colorBy;
+  const [a, b] = m === 'price' ? [money(lo), money(hi)] : m === 'vrt' ? ['High risk', 'Low risk'] : m === 'odds' ? ['Long shot', 'Likely'] :
+    m === 'overall' ? [grade(lo) + ' · weaker', 'Stronger · ' + grade(hi)] : ['Weaker', 'Stronger'];
+  $('#lgLo').textContent = a; $('#lgHi').textContent = b;
+}
+
+/* ---------- Geography ---------- */
+// Local plane in meters centered on Sphere; x east, y south.
+const LAT0 = 36.12097, LON0 = -115.16215;
+const MX = Math.cos(LAT0 * DEG) * 111320, MY = 110950;
+const proj = (lat, lon) => [(lon - LON0) * MX, -(lat - LAT0) * MY];
+const EXT = 0.32;           // 3D massing: roof lift per meter of height
+const K = 76 / 59;          // seat schematic units → meters inside the dome
+const SEAT_CY = 41;         // schematic dome center
+for (const s of SEATS) { s.cx = s.x * K; s.cy = (s.y - SEAT_CY) * K; }
+
+const CAT = {
+  show: { label: 'Sphere', color: '--s5' }, stay: { label: 'Hotels & casinos', color: '--s2' },
+  food: { label: 'Food & shopping', color: '--s4' }, sights: { label: 'Sights', color: '--s3' },
+  transit: { label: 'Transit', color: '--s1' }, venue: { label: 'Venues', color: '--muted' },
+};
+const MONO_DESC = 'Las Vegas Monorail station. Check the schedule and status before you rely on it.';
+const PLACES = [
+  ['sphere', 'Sphere', 'show', 36.12097, -115.16215, { t: 'sphere', r: 78, ht: 112 }, 1, 'Your venue: 516 feet across and 366 feet tall. Shows start at 8:00 PM; plan to arrive about an hour early for the atrium.'],
+  ['venetian', 'The Venetian Resort', 'stay', 36.1214, -115.1697, { t: 'rect', w: 320, h: 290, ht: 145 }, 1, 'The only resort connected to Sphere. Walk through the Venetian Expo and over the pedestrian bridge.'],
+  ['expo', 'Venetian Expo', 'venue', 36.1215, -115.1655, { t: 'rect', w: 380, h: 290, ht: 28 }, 0, 'Convention hall between the Venetian and Sphere, and the indoor route to the bridge.'],
+  ['palazzo', 'The Palazzo', 'stay', 36.1244, -115.1683, { t: 'rect', w: 220, h: 190, ht: 196 }, 1, 'Sister tower to the Venetian, on the same indoor route to Sphere.'],
+  ['wynn', 'Wynn Las Vegas', 'stay', 36.1266, -115.1655, { t: 'rect', w: 230, h: 180, ht: 187 }, 1, ''],
+  ['encore', 'Encore', 'stay', 36.1291, -115.1644, { t: 'rect', w: 190, h: 160, ht: 192 }, 1, ''],
+  ['ti', 'Treasure Island', 'stay', 36.1247, -115.1732, { t: 'rect', w: 180, h: 170, ht: 110 }, 1, ''],
+  ['mirage', 'Former Mirage site', 'venue', 36.1212, -115.1748, { t: 'rect', w: 250, h: 230, ht: 12 }, 0, 'Closed in 2024 and being redeveloped as a Hard Rock resort.'],
+  ['fashion', 'Fashion Show Las Vegas', 'food', 36.1277, -115.1717, { t: 'rect', w: 240, h: 220, ht: 26 }, 0, 'Large mall with a food court and casual restaurants, across the Strip from Wynn.'],
+  ['rw', 'Resorts World', 'stay', 36.1348, -115.1680, { t: 'rect', w: 250, h: 220, ht: 200 }, 1, ''],
+  ['harrahs', "Harrah's", 'stay', 36.1192, -115.1706, { t: 'rect', w: 160, h: 130, ht: 100 }, 0, ''],
+  ['linqhotel', 'The LINQ Hotel', 'stay', 36.1175, -115.1711, { t: 'rect', w: 120, h: 140, ht: 110 }, 0, ''],
+  ['linqprom', 'The LINQ Promenade', 'food', 36.1176, -115.1694, null, 0, 'Open-air street of restaurants and bars leading to the High Roller.'],
+  ['highroller', 'High Roller', 'sights', 36.1176, -115.1681, { t: 'wheel', r: 80, ht: 167 }, 1, '550-foot observation wheel. One rotation takes about 30 minutes.'],
+  ['caesars', 'Caesars Palace', 'stay', 36.1162, -115.1746, { t: 'rect', w: 320, h: 320, ht: 120 }, 1, ''],
+  ['forum', 'Forum Shops at Caesars', 'food', 36.1182, -115.1758, null, 0, 'Indoor mall with many restaurants, attached to Caesars Palace.'],
+  ['flamingo', 'Flamingo', 'stay', 36.1161, -115.1708, { t: 'rect', w: 190, h: 170, ht: 90 }, 0, ''],
+  ['horseshoe', 'Horseshoe', 'stay', 36.1143, -115.1700, { t: 'rect', w: 170, h: 150, ht: 100 }, 0, "Formerly Bally's."],
+  ['paris', 'Paris Las Vegas', 'stay', 36.1123, -115.1712, { t: 'rect', w: 190, h: 190, ht: 100 }, 1, 'Home of the half-scale Eiffel Tower.'],
+  ['bellagio', 'Bellagio', 'stay', 36.1128, -115.1767, { t: 'rect', w: 220, h: 220, ht: 155 }, 1, ''],
+  ['fountains', 'Fountains of Bellagio', 'sights', 36.1128, -115.17435, null, 1, 'Free water show on the Bellagio lake, running frequently from afternoon into the night.'],
+  ['cosmo', 'The Cosmopolitan', 'stay', 36.1097, -115.1740, { t: 'rect', w: 140, h: 140, ht: 184 }, 0, ''],
+  ['aria', 'Aria', 'stay', 36.1072, -115.1768, { t: 'rect', w: 250, h: 210, ht: 180 }, 0, ''],
+  ['mgm', 'MGM Grand', 'stay', 36.1023, -115.1703, { t: 'rect', w: 320, h: 320, ht: 90 }, 1, ''],
+  ['allegiant', 'Allegiant Stadium', 'venue', 36.0909, -115.1833, { t: 'circle', r: 150, ht: 60 }, 1, ''],
+  ['lvcc', 'Las Vegas Convention Center', 'venue', 36.1316, -115.1495, { t: 'rect', w: 480, h: 560, ht: 30 }, 1, ''],
+  ['westgate', 'Westgate', 'stay', 36.1361, -115.1515, { t: 'rect', w: 220, h: 200, ht: 100 }, 0, ''],
+  ['strat', 'The STRAT', 'sights', 36.1473, -115.1556, { t: 'circle', r: 35, ht: 350 }, 1, '1,149-foot tower with an observation deck and thrill rides.'],
+  ['fremont', 'Fremont Street Experience', 'sights', 36.1707, -115.1437, { t: 'rect', w: 420, h: 40, ht: 27, rot: 38 }, 1, 'Downtown pedestrian street under an LED canopy, about 15 minutes by car from the Strip.'],
+  ['neon', 'The Neon Museum', 'sights', 36.1771, -115.1354, null, 0, 'Outdoor collection of vintage Las Vegas signs.'],
+  ['airport', 'Harry Reid International Airport', 'transit', 36.0840, -115.1537, null, 1, 'About 15 minutes by car from Sphere, traffic permitting.'],
+  ['rideshare', 'Venetian rideshare & taxi', 'transit', 36.1227, -115.1683, null, 0, 'Rideshare and taxi pickup. Follow the signs inside the resort.'],
+  ['grandcanal', 'Grand Canal Shoppes', 'food', 36.1220, -115.1702, null, 0, 'Restaurants and shops inside the Venetian and Palazzo, along the indoor canal.'],
+  ['wynnplaza', 'Wynn Plaza', 'food', 36.1262, -115.1684, null, 0, 'Shops and restaurants at the front of Wynn.'],
+  ['m_mgm', 'Monorail · MGM Grand', 'transit', 36.1022, -115.1678, null, 0, MONO_DESC],
+  ['m_hs', 'Monorail · Horseshoe / Paris', 'transit', 36.1132, -115.1688, null, 0, MONO_DESC],
+  ['m_fl', 'Monorail · Flamingo / Caesars', 'transit', 36.1164, -115.1677, null, 0, MONO_DESC],
+  ['m_hl', "Monorail · Harrah's / The LINQ", 'transit', 36.1195, -115.1668, null, 0, MONO_DESC],
+  ['m_lvcc', 'Monorail · Convention Center', 'transit', 36.1307, -115.1541, null, 0, MONO_DESC],
+  ['m_wg', 'Monorail · Westgate', 'transit', 36.1366, -115.1532, null, 0, MONO_DESC],
+  ['m_sa', 'Monorail · SAHARA', 'transit', 36.1420, -115.1568, null, 0, MONO_DESC],
+].map(([id, name, cat, lat, lon, shape, major, desc]) => {
+  const [x, y] = proj(lat, lon);
+  const p = { id, name, cat, x, y, shape, major: !!major, desc };
+  if (shape && (shape.t === 'rect')) {
+    const a = (shape.rot || 0) * DEG, c = Math.cos(a), s = Math.sin(a), hw = shape.w / 2, hh = shape.h / 2;
+    p.poly = [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]].map(([u, v]) => [x + u * c - v * s, y + u * s + v * c]);
+  }
+  return p;
+});
+const PLACE = Object.fromEntries(PLACES.map(p => [p.id, p]));
+const BUILDINGS = PLACES.filter(p => p.shape).sort((a, b) => a.y - b.y);
+
+const L2 = pts => pts.map(([a, b]) => proj(a, b));
+const ROADS = [
+  ['free', 'I-15', [[36.075, -115.1800], [36.0950, -115.1825], [36.1150, -115.1835], [36.1300, -115.1810], [36.1450, -115.1715], [36.1600, -115.1595], [36.1780, -115.1520]]],
+  ['strip', 'Las Vegas Blvd', [[36.0820, -115.1755], [36.0950, -115.1737], [36.1000, -115.1729], [36.1160, -115.1724], [36.1215, -115.1720], [36.1250, -115.1711], [36.1280, -115.1694], [36.1320, -115.1668], [36.1380, -115.1625], [36.1450, -115.1578], [36.1550, -115.1530], [36.1650, -115.1478], [36.1710, -115.1440]]],
+  ['art', 'Sands Ave', [[36.1262, -115.1712], [36.1258, -115.1685], [36.1220, -115.1620], [36.1219, -115.1585], [36.1219, -115.1520]]],
+  ['art', 'Spring Mountain Rd', [[36.1262, -115.1712], [36.1262, -115.1900]]],
+  ['art', 'Koval Ln', [[36.0950, -115.1588], [36.1219, -115.1585]]],
+  ['art', 'Paradise Rd', [[36.0880, -115.1527], [36.1300, -115.1530], [36.1445, -115.1555]]],
+  ['art', 'Flamingo Rd', [[36.1160, -115.1900], [36.1158, -115.1400]]],
+  ['art', 'Harmon Ave', [[36.1097, -115.1745], [36.1095, -115.1400]]],
+  ['art', 'Tropicana Ave', [[36.1002, -115.1900], [36.1000, -115.1400]]],
+  ['art', 'Desert Inn Rd', [[36.1300, -115.1672], [36.1296, -115.1400]]],
+  ['art', 'Sahara Ave', [[36.1444, -115.1900], [36.1441, -115.1400]]],
+  ['art', 'Fremont St', [[36.1660, -115.1370], [36.1740, -115.1480]]],
+  ['loc', 'Convention Center Dr', [[36.1316, -115.1660], [36.1313, -115.1560]]],
+  ['loc', 'Audrie St', [[36.1140, -115.1660], [36.1195, -115.1660]]],
+  ['loc', 'Frank Sinatra Dr', [[36.0950, -115.1790], [36.1160, -115.1795]]],
+].map(([cls, name, pts]) => ({ cls, name, pts: L2(pts) }));
+const RAIL = L2([[36.1022, -115.1678], [36.1132, -115.1688], [36.1164, -115.1677], [36.1195, -115.1668], [36.1186, -115.1640], [36.1190, -115.1590], [36.1250, -115.1572], [36.1307, -115.1541], [36.1366, -115.1532], [36.1420, -115.1568]]);
+const AIRPORT = L2([[36.0950, -115.1640], [36.0950, -115.1390], [36.0700, -115.1300], [36.0640, -115.1300], [36.0640, -115.1700], [36.0800, -115.1700]]);
+const RUNWAYS = [L2([[36.0785, -115.1680], [36.0770, -115.1340]]), L2([[36.0745, -115.1680], [36.0732, -115.1345]]), L2([[36.0668, -115.1612], [36.0915, -115.1592]]), L2([[36.0668, -115.1572], [36.0915, -115.1552]])];
+const LAKE = (() => { const [x, y] = proj(36.1128, -115.17435); return [[x - 90, y - 130], [x + 90, y - 130], [x + 90, y + 130], [x - 90, y + 130]]; })();
+const BRIDGE = (() => { const e = PLACE.expo; return [[e.x + e.shape.w / 2, 0], [-78, 0]]; })();
+
+const legMeters = (a, b) => Math.hypot(a.x - b.x, a.y - b.y) * 1.3;
+function legText(m, short) {
+  const mi = (m / 1609).toFixed(m < 1609 ? 2 : 1).replace(/^0/, '');
+  if (m <= 2000) { const min = Math.max(1, Math.round(m / 75)); return short ? `${min} min walk` : `${min} min walk · ${mi} mi`; }
+  const min = Math.round(8 + m / 1000 / 28 * 60);
+  return short ? `~${min} min ride` : `~${min} min by car · ${mi} mi`;
+}
+
+/* ---------- Theme ---------- */
+const wrap = $('#mapwrap'), cv = $('#map'), ctx = cv.getContext('2d'), cvO = $('#mapO'), octx = cvO.getContext('2d'), tip = $('#tip');
+let C = {}, LUT = [];
+const hex = h => { h = h.replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };
+const isDark = () => { const t = document.documentElement.getAttribute('data-theme'); return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; };
+function readTheme() {
+  wrap.dataset.light = S.mapLight === 'auto' ? (isDark() ? 'night' : 'day') : S.mapLight;
+  const cs = getComputedStyle(wrap);
+  const g = k => cs.getPropertyValue(k).trim();
+  C = { bad: g('--bad'), ink: g('--ink'), muted: g('--muted'), stage: g('--stage'), stageInk: g('--stage-ink'), dim: g('--dim'),
+    focus: g('--focus'), panel: g('--panel'), bg: g('--bg'),
+    ground: g('--geo-ground'), area: g('--geo-area'), water: g('--geo-water'), road: g('--geo-road'), casing: g('--geo-casing'),
+    strip: g('--geo-strip'), stripCasing: g('--geo-strip-casing'), glow: g('--geo-glow'), free: g('--geo-free'), rail: g('--geo-rail'),
+    top: g('--geo-top'), side: g('--geo-side'), edge: g('--geo-edge'), shadow: g('--geo-shadow'), label: g('--geo-label'),
+    labelStrong: g('--geo-label-strong'), halo: g('--geo-halo'), walk: g('--geo-walk'), night: wrap.dataset.light === 'night' };
+  C.cat = {}; for (const k in CAT) C.cat[k] = g(CAT[k].color);
+  C.ramp = ['--s0', '--s1', '--s2', '--s3', '--s4', '--s5'].map(g);
+  const stops = C.ramp.map(c => hex(c || '#888888'));
+  LUT = [];
+  for (let i = 0; i < 64; i++) {
+    const t = i / 63 * (stops.length - 1), j = Math.min(stops.length - 2, Math.floor(t)), f = t - j;
+    const c = stops[j].map((v, q) => Math.round(lerp(v, stops[j + 1][q], f)));
+    LUT.push(`rgb(${c[0]},${c[1]},${c[2]})`);
+  }
+}
+const col = t => LUT[Math.max(0, Math.min(63, Math.round(t * 63)))];
+
+/* ---------- Map view ---------- */
+let W = 0, Hh = 0, dpr = 1, fitted = false;
+const V = { s: 3, tx: 0, ty: 0 };
+let sel = null, hover = null, selBlock = null, selPlace = null, hoverPlace = null; const pins = [];
+const VIEWS = {
+  seats: { box: [-60 * K, -56 * K, 60 * K, 57 * K] },
+  campus: { box: [-980, -760, 380, 470] },
+  strip: { box: [-1600, -3100, 1300, 3500] },
+  city: { box: [-2300, -6000, 1500, 5300] },
+};
+const viewFor = name => { const [x0, y0, x1, y1] = VIEWS[name].box; return { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, s: Math.min(W / (x1 - x0), Hh / (y1 - y0)) * 0.94 }; };
+const sMin = () => viewFor('city').s * 0.6, sMax = () => 70 / K;
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const interior = () => S.layers.seats ? smooth(0.55, 1.1, V.s) : 0;
+
+function resize() {
+  const r = wrap.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  const cx = (W / 2 - V.tx) / V.s, cy = (Hh / 2 - V.ty) / V.s;
+  W = r.width; Hh = r.height; dpr = window.devicePixelRatio || 1;
+  for (const c of [cv, cvO]) { c.width = Math.round(W * dpr); c.height = Math.round(Hh * dpr); }
+  if (!fitted) { setView(viewFor('seats')); fitted = true; } else { V.tx = W / 2 - cx * V.s; V.ty = Hh / 2 - cy * V.s; }
+  draw();
+}
+function setView(v) { V.s = v.s; V.tx = W / 2 - v.cx * V.s; V.ty = Hh / 2 - v.cy * V.s; }
+let flight = 0;
+function flyTo(v, dur = 750) {
+  cancelAnimationFrame(flight);
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !W) { setView(v); queue(); return; }
+  const c0 = { cx: (W / 2 - V.tx) / V.s, cy: (Hh / 2 - V.ty) / V.s, s: V.s }, t0 = performance.now();
+  const l0 = Math.log(c0.s), l1 = Math.log(v.s);
+  const step = now => {
+    const t = Math.min(1, (now - t0) / dur), e = t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    setView({ cx: lerp(c0.cx, v.cx, e), cy: lerp(c0.cy, v.cy, e), s: Math.exp(lerp(l0, l1, e)) });
+    draw();
+    if (t < 1) flight = requestAnimationFrame(step);
+  };
+  flight = requestAnimationFrame(step);
+}
+const stopFlight = () => cancelAnimationFrame(flight);
+function zoomAt(px, py, f) {
+  stopFlight();
+  const ns = clamp(V.s * f, sMin(), sMax()); const k = ns / V.s;
+  V.tx = px - (px - V.tx) * k; V.ty = py - (py - V.ty) * k; V.s = ns; queue();
+}
+function centerOn(s, seatScale) { flyTo({ cx: s.cx, cy: s.cy, s: (seatScale || Math.max(V.s * K, 12)) / K }, 550); }
+function centerPlace(p, sc) { flyTo({ cx: p.x, cy: p.y, s: sc || Math.max(V.s, 0.9) }, 650); }
+let raf = 0;
+const queue = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; draw(); }); };
+let rafO = 0;
+const queueO = () => { if (!rafO) rafO = requestAnimationFrame(() => { rafO = 0; drawOverlay(); }); };
+
+function seatFill(s) {
+  if (!s.active || !s.open) return C.dim;
+  if (S.dimBudget && !s.inBudget) return C.dim;
+  return col(s.ct);
+}
+function rowFill(row) {
+  if (!row.active) return C.dim;
+  if (S.dimBudget && !row.inBudget) return C.dim;
+  return col(row.ct);
+}
+const catOn = cat => cat === 'show' || cat === 'venue' || !!S.layers[cat];
+
+/* ---- base layer ---- */
+function path(g, pts, close) { g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]); if (close) g.closePath(); }
+function drawCity(g, s) {
+  const px = v => v / s;   // screen px → world meters
+  // airport
+  g.fillStyle = C.area; path(g, AIRPORT, true); g.fill();
+  g.strokeStyle = C.road; g.lineCap = 'butt';
+  for (const r of RUNWAYS) { g.lineWidth = Math.max(45, px(2)); path(g, r); g.stroke(); }
+  // water
+  g.fillStyle = C.water; path(g, LAKE, true); g.fill();
+  // roads
+  const W_ = { free: [46, 2.6], strip: [40, 3], art: [24, 1.6], loc: [14, 1] };
+  g.lineJoin = 'round'; g.lineCap = 'round';
+  for (const pass of ['casing', 'fill']) {
+    for (const cls of ['loc', 'art', 'free', 'strip']) {
+      if (cls === 'loc' && s < 0.12) continue;
+      const [m, minPx] = W_[cls], lw = Math.max(m, px(minPx));
+      for (const r of ROADS) {
+        if (r.cls !== cls) continue;
+        path(g, r.pts);
+        if (pass === 'casing') { g.strokeStyle = cls === 'strip' ? C.stripCasing : C.casing; g.lineWidth = lw + px(cls === 'strip' ? 2.4 : 1.6); }
+        else { g.strokeStyle = cls === 'strip' ? C.strip : cls === 'free' ? C.free : C.road; g.lineWidth = lw; }
+        g.stroke();
+      }
+    }
+  }
+  if (C.night) {   // the Strip glows after dark
+    const strip = ROADS.find(r => r.cls === 'strip');
+    g.save(); g.globalAlpha = 0.28; g.strokeStyle = C.glow; g.lineWidth = Math.max(140, px(10));
+    g.filter = 'blur(' + Math.max(2, Math.min(18, 30 * s)) + 'px)'; path(g, strip.pts); g.stroke(); g.restore();
+  }
+  // monorail
+  if (S.layers.transit) {
+    g.strokeStyle = C.rail; g.lineWidth = Math.max(7, px(1.6)); g.setLineDash([px(6), px(4)]); path(g, RAIL); g.stroke(); g.setLineDash([]);
+  }
+  // pedestrian bridge to Sphere
+  g.strokeStyle = C.walk; g.lineWidth = Math.max(9, px(2)); g.lineCap = 'butt'; path(g, BRIDGE); g.stroke(); g.lineCap = 'round';
+
+  // buildings
+  const ia = interior(), three = S.detail === '3d', E = EXT;
+  if (three && !C.night) {
+    g.fillStyle = C.shadow;
+    for (const b of BUILDINGS) {
+      if (b.shape.t === 'sphere' && ia > 0.99) continue;
+      const dx = b.shape.ht * 0.32, dy = b.shape.ht * 0.16;
+      if (b.poly) { path(g, b.poly.map(([x, y]) => [x + dx, y + dy]), true); g.fill(); }
+      else { g.beginPath(); g.arc(b.x + dx, b.y + dy, b.shape.r, 0, Math.PI * 2); g.fill(); }
+    }
+  }
+  const ew = px(1);
+  for (const b of BUILDINGS) {
+    const sh = b.shape, isSphere = sh.t === 'sphere';
+    if (isSphere && ia > 0.99) continue;
+    const off = three ? sh.ht * E * (isSphere ? (1 - ia) : 1) : 0;
+    g.save();
+    if (isSphere) g.globalAlpha = 1 - ia;
+    if (sh.t === 'wheel') {  // observation wheel: a ring on legs
+      g.strokeStyle = C.edge; g.lineWidth = Math.max(4, px(1.4));
+      g.beginPath(); g.moveTo(b.x - sh.r * .35, b.y); g.lineTo(b.x, b.y - off * .45); g.lineTo(b.x + sh.r * .35, b.y); g.stroke();
+      g.strokeStyle = C.labelStrong; g.lineWidth = Math.max(5, px(1.6));
+      g.beginPath(); g.ellipse(b.x, b.y - off * 0.55, sh.r, sh.r * (three ? 0.55 : 1), 0, 0, Math.PI * 2); g.stroke();
+      g.restore(); continue;
+    }
+    if (b.poly) {
+      if (off) {
+        g.fillStyle = C.side;
+        for (let i = 0; i < 4; i++) {
+          const a = b.poly[i], c = b.poly[(i + 1) % 4];
+          path(g, [a, c, [c[0], c[1] - off], [a[0], a[1] - off]], true); g.fill();
+        }
+      }
+      g.fillStyle = C.top; g.strokeStyle = C.edge; g.lineWidth = ew;
+      path(g, b.poly.map(([x, y]) => [x, y - off]), true); g.fill(); g.stroke();
+    } else {
+      const r = sh.r;
+      if (off) {
+        g.fillStyle = C.side;
+        g.beginPath(); g.arc(b.x, b.y, r, 0, Math.PI); g.lineTo(b.x - r, b.y - off); g.arc(b.x, b.y - off, r, Math.PI, 0, true); g.closePath(); g.fill();
+      }
+      if (isSphere) {
+        let fill = C.top;
+        if (g.createConicGradient) {
+          const cg = g.createConicGradient(-Math.PI / 2, b.x, b.y - off);
+          C.ramp.slice(1).concat(C.ramp[1]).forEach((c, i, a) => cg.addColorStop(i / (a.length - 1), c));
+          fill = cg;
+        }
+        if (C.night) { g.shadowColor = C.ramp[4]; g.shadowBlur = Math.min(60, 40 * s * 10); }
+        g.fillStyle = fill; g.globalAlpha = (1 - ia) * (C.night ? 1 : 0.85);
+        g.beginPath(); g.arc(b.x, b.y - off, r, 0, Math.PI * 2); g.fill();
+        g.shadowBlur = 0;
+      } else {
+        g.fillStyle = C.top; g.strokeStyle = C.edge; g.lineWidth = ew;
+        g.beginPath(); g.arc(b.x, b.y - off, r, 0, Math.PI * 2); g.fill(); g.stroke();
+      }
+    }
+    g.restore();
+  }
+  // dome shell once you can see inside
+  if (ia > 0) {
+    g.save(); g.globalAlpha = ia;
+    g.fillStyle = C.bg; g.beginPath(); g.arc(0, 0, 78, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = C.edge; g.lineWidth = px(1.2); g.setLineDash([px(5), px(5)]); g.stroke(); g.setLineDash([]);
+    g.restore();
+  }
+}
+
+function drawSeats(g, s) {
+  const sm = s * K, ia = interior();
+  g.save(); g.globalAlpha = ia;
+  g.translate(0, -SEAT_CY * K); g.scale(K, K);
+  g.fillStyle = C.stage; g.beginPath();
+  if (g.roundRect) g.roundRect(-15, -11, 30, 8, 1.5); else g.rect(-15, -11, 30, 8);
+  g.fill();
+  const seatMode = sm > 6.5;
+  const vx0 = (-V.tx / s) / K - 2, vx1 = ((W - V.tx) / s) / K + 2, vy0 = (-V.ty / s) / K + SEAT_CY - 2, vy1 = ((Hh - V.ty) / s) / K + SEAT_CY + 2;
+  const buckets = new Map();
+  const push = (key, item) => { let b = buckets.get(key); if (!b) buckets.set(key, b = []); b.push(item); };
+  for (const row of ROWS) {
+    const L = row.sec.L;
+    if (L.ga) { push(rowFill(row) + '|ga', row); continue; }
+    if (!seatMode) {
+      const step = (row.b1 - row.b0) / row.n;
+      for (let k = 0; k < row.n; k++) push(seatFill(SEATS[row.start + k]) + '|' + L.id, [row.rad, row.b0 + k * step, row.b0 + (k + 1) * step]);
+    } else {
+      const pitch = row.rad * (row.b1 - row.b0) * DEG / row.n, rr = Math.min(L.rowDepth, pitch) * 0.4;
+      for (let k = 0; k < row.n; k++) {
+        const st = SEATS[row.start + k];
+        if (st.x < vx0 || st.x > vx1 || st.y < vy0 || st.y > vy1) continue;
+        push(seatFill(st) + '|dot', [st.x, st.y, rr]);
+      }
+    }
+  }
+  const LV = Object.fromEntries(LEVELS.map(l => [l.id, l]));
+  for (const [key, items] of buckets) {
+    const [color, kind] = key.split('|');
+    g.beginPath();
+    if (kind === 'dot') {
+      for (const [x, y, r] of items) { g.moveTo(x + r, y); g.arc(x, y, r, 0, Math.PI * 2); }
+      g.fillStyle = color; g.fill();
+    } else if (kind === 'ga') {
+      for (const row of items) { g.beginPath(); g.arc(0, 0, row.rad, (90 - row.b1) * DEG, (90 - row.b0) * DEG); g.lineWidth = row.sec.L.rowDepth * 0.9; g.strokeStyle = color; g.stroke(); }
+    } else {
+      for (const [rad, a0, a1] of items) {
+        const s0 = (90 - a1) * DEG, s1 = (90 - a0) * DEG;
+        g.moveTo(rad * Math.cos(s0), rad * Math.sin(s0)); g.arc(0, 0, rad, s0, s1);
+      }
+      g.lineWidth = LV[kind].rowDepth * 0.78; g.strokeStyle = color; g.lineCap = 'butt'; g.stroke();
+    }
+  }
+  g.restore();
+}
+
+const SX = (x) => V.tx + x * V.s, SY = (y) => V.ty + y * V.s;
+const seatPt = (x, y) => [SX(x * K), SY((y - SEAT_CY) * K)];
+function drawSeatLabels(g) {
+  const ia = interior(); if (ia < 0.4) return;
+  const sm = V.s * K;
+  g.save(); g.globalAlpha = smooth(0.4, 1, ia);
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  const [sx, sy] = seatPt(0, -7);
+  if (sm * 8 > 14) { g.fillStyle = C.stageInk; g.font = `600 ${clamp(sm * 2.2, 8, 16)}px "Geist Mono", ui-monospace, monospace`; g.fillText('STAGE', sx, sy); }
+  g.font = `600 ${clamp(sm * 2.1, 9, 14)}px "Geist Mono", ui-monospace, monospace`;
+  for (const sec of SECS) {
+    const L = sec.L, rl = L.ga ? (L.r0 + L.r1) / 2 : L.r0 - 1;
+    const [x, y] = seatPt(rl * Math.sin(sec.c * DEG), rl * Math.cos(sec.c * DEG));
+    if (x < -20 || x > W + 20 || y < -20 || y > Hh + 20) continue;
+    const txt = L.ga ? 'GA FLOOR' : sec.num;
+    g.lineWidth = 3.5; g.strokeStyle = C.bg; g.strokeText(txt, x, y); g.fillStyle = C.ink; g.fillText(txt, x, y);
+  }
+  if (sm > 15) {
+    g.font = `500 ${clamp(sm * 0.55, 8, 11)}px "Geist Mono", ui-monospace, monospace`; g.fillStyle = C.muted;
+    for (const row of ROWS) {
+      if (row.sec.L.ga) continue;
+      const a = row.sec.a0 + 0.3, [x, y] = seatPt(row.rad * Math.sin(a * DEG), row.rad * Math.cos(a * DEG));
+      if (x < -10 || x > W + 10 || y < -10 || y > Hh + 10) continue;
+      g.fillText(row.r, x, y);
+    }
+  }
+  if (sm > 2.2) {
+    g.font = `500 ${clamp(sm * 1.7, 8, 12)}px "Geist Mono", ui-monospace, monospace`; g.fillStyle = C.muted;
+    for (const L of LEVELS) {
+      if (L.ga) continue;
+      const a = L.edges[0] - 4, rm = (L.r0 + L.r1) / 2, [x, y] = seatPt(rm * Math.sin(a * DEG), rm * Math.cos(a * DEG));
+      g.fillText(L.id + 's', x, y);
+    }
+  }
+  if (TAKEN.size) {
+    g.strokeStyle = C.bad; g.lineWidth = 1.5; g.setLineDash([3, 3]);
+    const [ox, oy] = seatPt(0, 0);
+    for (const row of ROWS) {
+      if (!TAKEN.has(rowKey(row))) continue;
+      g.beginPath(); g.arc(ox, oy, row.rad * sm, (90 - row.b1) * DEG, (90 - row.b0) * DEG); g.stroke();
+    }
+    g.setLineDash([]);
+  }
+  g.restore();
+}
+
+let LABEL_BOXES = [];
+function placeLabelPos(p) {
+  const three = S.detail === '3d', ia = interior();
+  const off = p.shape && three ? p.shape.ht * EXT * (p.shape.t === 'sphere' ? 1 - ia : 1) : 0;
+  return [SX(p.x), SY(p.y - off)];
+}
+function drawCityLabels(g) {
+  const s = V.s, ia = interior();
+  LABEL_BOXES = [];
+  const boxes = LABEL_BOXES;
+  const free = (x, y, w, h) => { for (const b of boxes) if (x < b[0] + b[2] && x + w > b[0] && y < b[1] + b[3] && y + h > b[1]) return false; boxes.push([x, y, w, h]); return true; };
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  // street names
+  if (S.layers.streets && s >= 0.16) {
+    g.font = `500 10.5px "Geist", system-ui, sans-serif`;
+    for (const r of ROADS) {
+      if (r.cls === 'loc' && s < 0.5) continue;
+      let best = null;
+      for (let i = 0; i < r.pts.length - 1; i++) {
+        const a = r.pts[i], b = r.pts[i + 1], ax = SX(a[0]), ay = SY(a[1]), bx = SX(b[0]), by = SY(b[1]);
+        const mx = (ax + bx) / 2, my = (ay + by) / 2, len = Math.hypot(bx - ax, by - ay);
+        if (mx < 30 || mx > W - 30 || my < 30 || my > Hh - 30) continue;
+        if (!best || len > best.len) best = { mx, my, len, ang: Math.atan2(by - ay, bx - ax) };
+      }
+      if (!best || best.len < 120) continue;
+      let ang = best.ang; if (ang > Math.PI / 2) ang -= Math.PI; if (ang < -Math.PI / 2) ang += Math.PI;
+      const tw = g.measureText(r.name).width;
+      if (!free(best.mx - tw / 2, best.my - 7, tw, 14)) continue;
+      g.save(); g.translate(best.mx, best.my); g.rotate(ang);
+      g.lineWidth = 3; g.strokeStyle = C.halo; g.strokeText(r.name, 0, 0); g.fillStyle = C.label; g.fillText(r.name, 0, 0);
+      g.restore();
+    }
+  }
+  // places
+  const minMajor = 0.06, minMinor = S.labels === 'more' ? 0.28 : 0.7;
+  const order = PLACES.slice().sort((a, b) => (b.major - a.major) || (a.id === 'sphere' ? -1 : 0));
+  for (const p of order) {
+    if (!catOn(p.cat)) continue;
+    if (p.id === 'sphere' && ia > 0.6) continue;
+    const isMono = p.id.startsWith('m_');
+    const minS = isMono ? 0.22 : p.major ? minMajor : minMinor;
+    if (s < minS) continue;
+    const [x, y] = placeLabelPos(p);
+    if (x < -60 || x > W + 60 || y < -30 || y > Hh + 30) continue;
+    const marker = !p.shape;
+    const fs = p.major ? 12.5 : 11.5;
+    g.font = `${p.major ? 600 : 500} ${fs}px "Geist", system-ui, sans-serif`;
+    const name = isMono ? p.name.replace('Monorail · ', '') : p.name;
+    const tw = g.measureText(name).width;
+    const ly = marker ? y - 14 : y;
+    if (!free(x - tw / 2 - 3, ly - 8, tw + 6, 16)) { if (marker) drawMarker(g, p, x, y, 3.5); continue; }
+    if (marker) drawMarker(g, p, x, y, isMono ? 4 : 5);
+    g.lineWidth = 3.5; g.strokeStyle = C.halo; g.strokeText(name, x, ly);
+    g.fillStyle = p.major ? C.labelStrong : C.label; g.fillText(name, x, ly);
+  }
+}
+function drawMarker(g, p, x, y, r) {
+  g.beginPath(); g.arc(x, y, r + 1.5, 0, Math.PI * 2); g.fillStyle = C.halo; g.fill();
+  g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fillStyle = C.cat[p.cat] || C.ink; g.fill();
+}
+
+function drawRoute(g) {
+  if (!S.layers.trip || interior() > 0.6) return;
+  const day = activeDay(); if (!day || !day.stops.length) return;
+  const pts = day.stops.map(st => PLACE[st.p]).filter(Boolean);
+  if (!pts.length) return;
+  const xy = pts.map(p => [SX(p.x), SY(p.y)]);
+  g.save(); g.lineJoin = 'round'; g.lineCap = 'round';
+  if (xy.length > 1) {
+    path(g, xy); g.strokeStyle = C.halo; g.lineWidth = 6; g.stroke();
+    path(g, xy); g.strokeStyle = C.focus; g.lineWidth = 2.5; g.setLineDash([7, 5]); g.stroke(); g.setLineDash([]);
+    g.font = `600 10.5px "Geist Mono", ui-monospace, monospace`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [ax, ay] = xy[i], [bx, by] = xy[i + 1], len = Math.hypot(bx - ax, by - ay);
+      if (len < 90) continue;
+      const t = legText(legMeters(pts[i], pts[i + 1]), true), tw = g.measureText(t).width + 12, mx = (ax + bx) / 2, my = (ay + by) / 2;
+      g.fillStyle = C.panel; g.strokeStyle = C.focus; g.lineWidth = 1;
+      g.beginPath(); if (g.roundRect) g.roundRect(mx - tw / 2, my - 9, tw, 18, 9); else g.rect(mx - tw / 2, my - 9, tw, 18); g.fill(); g.stroke();
+      g.fillStyle = C.focus; g.fillText(t, mx, my + 0.5);
+    }
+  }
+  g.font = `600 11px "Geist Mono", ui-monospace, monospace`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  xy.forEach(([x, y], i) => {
+    g.beginPath(); g.arc(x, y, 10, 0, Math.PI * 2); g.fillStyle = C.focus; g.fill();
+    g.lineWidth = 2; g.strokeStyle = C.halo; g.stroke();
+    g.fillStyle = C.panel; g.fillText(String(i + 1), x, y + 0.5);
+  });
+  g.restore();
+}
+
+function draw() {
+  if (!W) return;
+  const s = V.s;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.fillStyle = C.ground; ctx.fillRect(0, 0, W, Hh);
+  ctx.setTransform(dpr * s, 0, 0, dpr * s, dpr * V.tx, dpr * V.ty);
+  drawCity(ctx, s);
+  if (interior() > 0) drawSeats(ctx, s);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  drawSeatLabels(ctx);
+  drawCityLabels(ctx);
+  drawRoute(ctx);
+  updateChrome();
+  drawOverlay();
+}
+
+/* ---- overlay layer: hover + selection only, cheap to redraw ---- */
+function placeOutline(g, p, color, w) {
+  const three = S.detail === '3d', ia = interior();
+  if (!p.shape) { const [x, y] = [SX(p.x), SY(p.y)]; g.beginPath(); g.arc(x, y, 9, 0, Math.PI * 2); g.lineWidth = w; g.strokeStyle = color; g.stroke(); return; }
+  const off = three ? p.shape.ht * EXT * (p.shape.t === 'sphere' ? 1 - ia : 1) : 0;
+  g.beginPath();
+  if (p.poly) { p.poly.forEach(([x, y], i) => { const X = SX(x), Y = SY(y - off); i ? g.lineTo(X, Y) : g.moveTo(X, Y); }); g.closePath(); }
+  else { const r = p.shape.r * V.s; g.ellipse(SX(p.x), SY(p.y - off * (p.shape.t === 'wheel' ? .55 : 1)), Math.max(r, 6), Math.max(r * (p.shape.t === 'wheel' && three ? .55 : 1), 6), 0, 0, Math.PI * 2); }
+  g.lineWidth = w; g.strokeStyle = color; g.stroke();
+}
+function drawOverlay() {
+  octx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  octx.clearRect(0, 0, W, Hh);
+  const ia = interior();
+  if (ia > 0.5) {
+    const sm = V.s * K, seatMode = sm > 6.5;
+    const ring = (st, color, w, extra) => {
+      const x = SX(st.cx), y = SY(st.cy);
+      const pitch = st.rad * (st.row.b1 - st.row.b0) * DEG / st.n;
+      const rr = seatMode && !st.L.ga ? Math.min(st.L.rowDepth, pitch) * 0.4 * sm + 3 + extra : 7 + extra;
+      octx.beginPath(); octx.arc(x, y, rr, 0, Math.PI * 2); octx.lineWidth = w; octx.strokeStyle = color; octx.stroke();
+    };
+    pins.forEach(p => ring(p, C.muted, 2, 0));
+    if (hover && hover !== sel) ring(hover, C.focus, 2, 0);
+    if (selBlock && selBlock.length > 1) selBlock.forEach(b => { if (b !== sel) { ring(b, C.bg, 5, 0); ring(b, C.ink, 2, 0); } });
+    if (sel) { ring(sel, C.bg, 6, 1); ring(sel, C.ink, 2.5, 1); }
+  }
+  if (hoverPlace && hoverPlace !== selPlace) placeOutline(octx, hoverPlace, C.focus, 2);
+  if (selPlace) { placeOutline(octx, selPlace, C.halo, 5); placeOutline(octx, selPlace, C.labelStrong, 2); }
+}
+
+/* ---- chrome: scale bar + legend swap ---- */
+const scaleEl = $('#scale');
+function updateChrome() {
+  const mPerPx = 1 / V.s, target = 90 * mPerPx;   // ~90px bar
+  const ft = target * 3.281;
+  const stepsFt = [10, 25, 50, 100, 250, 500, 1000, 2000];
+  let label, px;
+  const fNice = stepsFt.filter(v => v <= ft).pop();
+  if (ft < 2640 && fNice) { label = fNice.toLocaleString() + ' ft'; px = fNice / 3.281 * V.s; }
+  else { const mi = [0.5, 1, 2, 5].filter(v => v * 1609 <= target).pop() || 0.5; label = mi + ' mi'; px = mi * 1609 * V.s; }
+  scaleEl.querySelector('i').style.width = Math.round(px) + 'px';
+  scaleEl.querySelector('span').textContent = label;
+  const ia = interior();
+  const bowl = ia >= 0.4 && SX(78) > 0 && SX(-78) < W && SY(78) > 0 && SY(-78) < Hh;
+  $('#legSeat').hidden = !bowl; $('#legCity').hidden = bowl;
+}
+
+/* ---------- Hit testing ---------- */
+function hitSeat(sx, sy) {
+  const r = Math.hypot(sx, sy), th = Math.atan2(sx, sy) / DEG;
+  const L = LEVELS.find(l => r >= l.r0 && r <= l.r1);
+  if (!L) return null;
+  const i = L.edges.findIndex((e, k) => k < L.edges.length - 1 && th >= e && th <= L.edges[k + 1]);
+  if (i < 0) return null;
+  const sec = L.secs[i];
+  const row = sec.rows[Math.min(L.rows - 1, Math.floor((r - L.r0) / L.rowDepth))];
+  if (L.ga) return SEATS[row.start];
+  if (th < row.b0 || th > row.b1) return null;
+  const k = Math.min(row.n - 1, Math.floor((th - row.b0) / ((row.b1 - row.b0) / row.n)));
+  return SEATS[row.start + k];
+}
+const inPoly = (x, y, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) c = !c; } return c; };
+function hitAt(px, py) {
+  const wx = (px - V.tx) / V.s, wy = (py - V.ty) / V.s, ia = interior();
+  if (ia > 0.5) {
+    const st = hitSeat(wx / K, wy / K + SEAT_CY);
+    if (st) return { seat: st };
+    if (Math.hypot(wx, wy) < 78) return null;
+  }
+  // pins first (screen distance), then roofs, then footprints
+  let best = null, bd = 12;
+  for (const p of PLACES) {
+    if (p.shape || !catOn(p.cat)) continue;
+    if (V.s < (p.id.startsWith('m_') ? 0.22 : p.major ? 0.06 : 0.2)) continue;
+    const d = Math.hypot(SX(p.x) - px, SY(p.y) - py);
+    if (d < bd) { bd = d; best = p; }
+  }
+  if (best) return { place: best };
+  const three = S.detail === '3d';
+  for (let i = BUILDINGS.length - 1; i >= 0; i--) {
+    const b = BUILDINGS[i];
+    if (b.id === 'sphere' && ia > 0.5) continue;
+    const off = three ? b.shape.ht * EXT * (b.id === 'sphere' ? 1 - ia : 1) : 0;
+    const hitIt = y => b.poly ? inPoly(wx, y, b.poly) : Math.hypot(wx - b.x, y - b.y) <= Math.max(b.shape.r, 8 / V.s);
+    if (hitIt(wy + off) || hitIt(wy)) return { place: b };
+  }
+  return null;
+}
+
+/* ---------- Pointer ---------- */
+const ptrs = new Map(); let moved = 0, pinch = null, lastMove = null, hoverRaf = 0, tipKey = '', tipW = 0, tipH = 0;
+const rel = e => { const b = cvO.getBoundingClientRect(); return { x: e.clientX - b.left, y: e.clientY - b.top }; };
+cvO.addEventListener('pointerdown', e => {
+  stopFlight();
+  cvO.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, rel(e)); moved = 0;
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), s: V.s }; moved = 99; }
+});
+cvO.addEventListener('pointermove', e => {
+  const p = rel(e), prev = ptrs.get(e.pointerId);
+  if (prev) {
+    if (ptrs.size === 1) { V.tx += p.x - prev.x; V.ty += p.y - prev.y; moved += Math.abs(p.x - prev.x) + Math.abs(p.y - prev.y); queue(); }
+    ptrs.set(e.pointerId, p);
+    if (ptrs.size === 2 && pinch) {
+      const [a, b] = [...ptrs.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y);
+      zoomAt((a.x + b.x) / 2, (a.y + b.y) / 2, (pinch.s * d / pinch.d) / V.s);
+    }
+    tip.hidden = true; return;
+  }
+  lastMove = { p, mouse: e.pointerType === 'mouse' };
+  if (!hoverRaf) hoverRaf = requestAnimationFrame(hoverTick);
+});
+function hoverTick() {
+  hoverRaf = 0; if (!lastMove) return;
+  const { p, mouse } = lastMove, h = hitAt(p.x, p.y);
+  const hs = h && h.seat || null, hp = h && h.place || null;
+  if (hs !== hover || hp !== hoverPlace) { hover = hs; hoverPlace = hp; queueO(); }
+  cvO.style.cursor = markMode ? 'crosshair' : h ? 'pointer' : '';
+  if (!h || !mouse) { tip.hidden = true; tipKey = ''; return; }
+  const key = hs ? 's' + hs.id : 'p' + hp.id;
+  if (key !== tipKey) {
+    tipKey = key;
+    tip.innerHTML = hs ? `${seatName(hs, true)}<br>${grade(hs.overall)} ${Math.round(hs.overall)} · ${money(hs.price)}`
+      : `${hp.name}${hp.id === 'sphere' ? '' : '<br>' + legText(legMeters(hp, PLACE.sphere), true) + ' from Sphere'}`;
+    tip.hidden = false; tipW = tip.offsetWidth; tipH = tip.offsetHeight;
+  }
+  let x = p.x + 14, y = p.y + 14;
+  if (x + tipW > W - 6) x = p.x - tipW - 14; if (y + tipH > Hh - 6) y = p.y - tipH - 14;
+  tip.style.transform = `translate(${x}px,${y}px)`;
+}
+cvO.addEventListener('pointerleave', () => { lastMove = null; hover = null; hoverPlace = null; tip.hidden = true; tipKey = ''; queueO(); });
+const endPtr = e => {
+  if (ptrs.has(e.pointerId) && ptrs.size === 1 && moved < 5) {
+    const p = rel(e), h = hitAt(p.x, p.y);
+    if (h && h.seat && markMode) {
+      const key = rowKey(h.seat.row), list = new Set(S.taken[S.show] || []);
+      list.has(key) ? list.delete(key) : list.add(key);
+      S.taken[S.show] = [...list]; update();
+    } else if (h && h.seat) { const wasZoomed = V.s * K > 6.5; select(h.seat); if (!wasZoomed && !h.seat.L.ga) centerOn(h.seat, 11); }
+    else if (h && h.place) selectPlace(h.place);
+  }
+  ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null;
+};
+cvO.addEventListener('pointerup', endPtr);
+cvO.addEventListener('pointercancel', e => { ptrs.delete(e.pointerId); pinch = null; });
+cvO.addEventListener('wheel', e => { e.preventDefault(); const p = rel(e); zoomAt(p.x, p.y, Math.exp(-e.deltaY * 0.0016)); }, { passive: false });
+cvO.addEventListener('dblclick', e => {
+  const p = rel(e), h = hitAt(p.x, p.y);
+  if (h && h.place) { centerPlace(h.place, h.place.id === 'sphere' ? viewFor('seats').s : Math.max(V.s * 2, 1)); return; }
+  zoomAt(p.x, p.y, 2);
+});
+cvO.addEventListener('keydown', e => {
+  const k = e.key, st = 40;
+  if (k === '+' || k === '=') zoomAt(W / 2, Hh / 2, 1.4);
+  else if (k === '-') zoomAt(W / 2, Hh / 2, 1 / 1.4);
+  else if (k === 'ArrowLeft') { V.tx += st; queue(); } else if (k === 'ArrowRight') { V.tx -= st; queue(); }
+  else if (k === 'ArrowUp') { V.ty += st; queue(); } else if (k === 'ArrowDown') { V.ty -= st; queue(); }
+  else return;
+  e.preventDefault();
+});
+$('#zin').onclick = () => zoomAt(W / 2, Hh / 2, 1.6);
+$('#zout').onclick = () => zoomAt(W / 2, Hh / 2, 1 / 1.6);
+$('#zfit').onclick = () => flyTo(viewFor('seats'));
+$('#zcity').onclick = () => flyTo(viewFor('strip'), 900);
+
+function seatName(s, short) {
+  if (s.L.ga) return short ? 'GA · ' + GA_ROW[s.r - 1].toLowerCase() : 'GA Floor';
+  return short ? `${s.sec.num} · R${s.r} · S${s.num}` : `Section ${s.sec.num}`;
+}
+
+$('#searchForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const inp = $('#search'), q = inp.value.trim().toLowerCase();
+  if (!q) return;
+  if (q.startsWith('ga')) { const s = SEATS[SECS[0].rows[0].start]; select(s); centerOn(s, 9); inp.setCustomValidity(''); return; }
+  const m = q.match(/^(\d{3})\D*(\d{1,2})?\D*(\d{1,2})?/);
+  const sec = m && SEC_BY_NUM[m[1]];
+  if (sec) {
+    inp.setCustomValidity('');
+    const r = clamp(+(m[2] || 1), 1, sec.L.rows), row = sec.rows[r - 1];
+    const k = m[3] ? clamp(+m[3], 1, row.n) - 1 : Math.floor(row.n / 2);
+    const s = SEATS[row.start + k]; select(s); centerOn(s, 14); return;
+  }
+  const p = PLACES.find(p => p.name.toLowerCase().includes(q)) || PLACES.find(p => p.name.toLowerCase().replace(/[^a-z]/g, '').includes(q.replace(/[^a-z]/g, '')));
+  if (p) { inp.setCustomValidity(''); selectPlace(p); centerPlace(p, Math.max(V.s, 0.9)); return; }
+  inp.setCustomValidity('Try a seat like 206 11 8, or a place like Bellagio'); inp.reportValidity();
+});
+$('#search').addEventListener('input', e => e.target.setCustomValidity(''));
+
+/* ---------- Tabs ---------- */
+function setTab(t) {
+  S.tab = t;
+  document.querySelectorAll('#tabs [data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+  document.querySelectorAll('[data-pane]').forEach(p => { p.hidden = p.dataset.pane !== t; });
+  const view = t === 'seats' ? 'seats' : 'trip';
+  document.querySelectorAll('[data-view]').forEach(v => { v.hidden = v.dataset.view !== view; });
+  save();
+}
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab); });
+
+/* ---------- Trip ---------- */
+const SHOW_DATE = id => new Date(2027, +id.slice(0, 2) - 1, +id.slice(2));
+const fmtDay = d => d.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const dayDate = i => { const d = SHOW_DATE(S.show); d.setDate(d.getDate() + i - 1); return d; };
+const fmtTime = t => { if (!t) return '—'; const [h, m] = t.split(':').map(Number); return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`; };
+function exampleTrip() {
+  return { active: 1, example: true, days: [
+    { title: 'Arrive', stops: [{ t: '14:00', p: 'airport' }, { t: '15:30', p: 'venetian', n: 'Check in' }, { t: '19:00', p: 'grandcanal', n: 'Dinner' }, { t: '21:30', p: 'fountains' }] },
+    { title: 'Show day', stops: [{ t: '10:30', p: 'wynnplaza', n: 'Brunch' }, { t: '14:00', p: 'highroller' }, { t: '18:45', p: 'sphere', n: 'Arrive early for the atrium' }, { t: '23:15', p: 'linqprom', n: 'Late bite' }] },
+    { title: 'Head home', stops: [{ t: '11:00', p: 'venetian', n: 'Check out' }, { t: '13:00', p: 'airport' }] },
+  ] };
+}
+const trip = () => { if (!S.trips[S.show]) S.trips[S.show] = exampleTrip(); return S.trips[S.show]; };
+const activeDay = () => { const t = trip(); return t.days[t.active] || t.days[0]; };
+const sortStops = d => d.stops.sort((a, b) => (a.t || '99').localeCompare(b.t || '99'));
+function tripChanged(markEdited = true) {
+  if (markEdited) trip().example = false;
+  save(); renderTrip(); renderPlace(); renderTimeline(); queue();
+}
+
+const placeOptions = (() => {
+  const groups = {};
+  for (const p of PLACES) (groups[p.cat] = groups[p.cat] || []).push(p);
+  return ['show', 'stay', 'food', 'sights', 'transit', 'venue'].filter(c => groups[c]).map(c =>
+    `<optgroup label="${CAT[c].label}">${groups[c].sort((a, b) => a.name.localeCompare(b.name)).map(p => `<option value="${p.id}">${p.name}</option>`).join('')}</optgroup>`).join('');
+})();
+
+function renderTrip() {
+  const t = trip();
+  $('#dayTabs').innerHTML = t.days.map((d, i) => `<button type="button" role="radio" aria-checked="${i === t.active}" data-d="${i}">${d.title}<small>${fmtDay(dayDate(i))}</small></button>`).join('');
+  const d = activeDay();
+  $('#tripBadge').hidden = !t.example;
+  $('#stops').innerHTML = d.stops.length ? d.stops.map((st, i) => `
+    <li data-i="${i}">
+      <span class="num">${i + 1}</span>
+      <input type="time" id="st_t_${i}" value="${st.t || ''}" aria-label="Time for stop ${i + 1}">
+      <select id="st_p_${i}" aria-label="Place for stop ${i + 1}">${placeOptions}</select>
+      <button type="button" class="x" data-rm="${i}" aria-label="Remove stop ${i + 1}">✕</button>
+      <input type="text" id="st_n_${i}" class="note" value="${(st.n || '').replace(/"/g, '&quot;')}" placeholder="Note (optional)" aria-label="Note for stop ${i + 1}">
+    </li>`).join('') : '<li class="empty">No stops yet. Add one below, or click a place on the map.</li>';
+  d.stops.forEach((st, i) => { const s = $('#st_p_' + i); if (s) s.value = st.p; });
+}
+$('#dayTabs').addEventListener('click', e => { const b = e.target.closest('[data-d]'); if (!b) return; trip().active = +b.dataset.d; tripChanged(false); });
+$('#stops').addEventListener('change', e => {
+  const li = e.target.closest('li[data-i]'); if (!li) return;
+  const st = activeDay().stops[+li.dataset.i];
+  if (e.target.type === 'time') { st.t = e.target.value; sortStops(activeDay()); }
+  else if (e.target.tagName === 'SELECT') st.p = e.target.value;
+  else st.n = e.target.value;
+  tripChanged();
+});
+$('#stops').addEventListener('click', e => {
+  const b = e.target.closest('[data-rm]'); if (!b) return;
+  activeDay().stops.splice(+b.dataset.rm, 1); tripChanged();
+});
+function nextTime(d) {
+  const last = d.stops.length ? d.stops[d.stops.length - 1].t : '';
+  if (!last) return '12:00';
+  const [h, m] = last.split(':').map(Number); return `${String(Math.min(23, h + 1)).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+function addStop(placeId, dayIdx) {
+  const t = trip(); if (dayIdx != null) t.active = dayIdx;
+  const d = activeDay();
+  d.stops.push({ t: nextTime(d), p: placeId || (selPlace && selPlace.id) || 'sphere' });
+  sortStops(d); tripChanged();
+}
+$('#addStop').onclick = () => addStop();
+$('#clearDay').onclick = () => { activeDay().stops = []; tripChanged(); };
+$('#resetTrip').onclick = () => { S.trips[S.show] = exampleTrip(); tripChanged(false); };
+
+function selectPlace(p) {
+  selPlace = p;
+  if (S.tab === 'seats') setTab('trip');
+  renderPlace(); queueO();
+}
+function renderPlace() {
+  const el = $('#placeCard'), p = selPlace;
+  if (!p) {
+    el.innerHTML = `<p class="eyebrow">Explore</p><h2 class="pc-title">Plan around the show</h2>
+      <p class="pc-desc">Zoom out from your seat to see the Venetian campus and the Strip. Click any building or pin for walk times, then add it to a day.</p>
+      <div class="row-btns"><button class="btn" type="button" data-go="campus">Sphere & Venetian</button><button class="btn" type="button" data-go="strip">The Strip</button><button class="btn" type="button" data-go="city">Airport to downtown</button></div>`;
+    return;
+  }
+  const t = trip(), fromS = p.id === 'sphere' ? null : legText(legMeters(p, PLACE.sphere));
+  const stay = t.days.flatMap(d => d.stops).map(s => PLACE[s.p]).find(q => q && q.cat === 'stay' && q !== p);
+  const fromStay = stay ? legText(legMeters(p, stay)) : null;
+  el.innerHTML = `
+    <p class="eyebrow"><span class="dot" style="background:var(${CAT[p.cat].color})"></span>${CAT[p.cat].label}</p>
+    <h2 class="pc-title">${p.name}</h2>
+    ${p.desc ? `<p class="pc-desc">${p.desc}</p>` : ''}
+    <dl class="geo">
+      ${fromS ? `<div><dt>From Sphere</dt><dd>${fromS}</dd></div>` : ''}
+      ${fromStay ? `<div><dt>From ${stay.name.replace('The ', '')}</dt><dd>${fromStay}</dd></div>` : ''}
+    </dl>
+    <div><span class="lbl">Add to</span>
+      <div class="row-btns" style="margin-top:6px">${t.days.map((d, i) => `<button class="btn${i === t.active ? ' primary' : ''}" type="button" data-add="${i}">${d.title}</button>`).join('')}</div>
+    </div>
+    <div class="row-btns"><button class="btn" type="button" id="pcCenter">Center on map</button>${p.id === 'sphere' ? '<button class="btn" type="button" id="pcSeats">Go to my seats</button>' : ''}</div>
+    <p class="help">Walk times are straight-line distance plus 30% for casino floors and crossings, at an easy pace. Rides include about 8 minutes to get a car.</p>`;
+  el.querySelectorAll('[data-add]').forEach(b => b.onclick = () => addStop(p.id, +b.dataset.add));
+  $('#pcCenter').onclick = () => centerPlace(p, Math.max(V.s, p.major ? 0.6 : 1));
+  const ps = $('#pcSeats'); if (ps) ps.onclick = () => { setTab('seats'); if (sel) centerOn(sel, 12); else flyTo(viewFor('seats')); };
+}
+$('#placeCard').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) flyTo(viewFor(b.dataset.go), 900); });
+
+function renderTimeline() {
+  const t = trip(), d = activeDay(), el = $('#timeline');
+  let walk = 0;
+  const items = d.stops.map((st, i) => {
+    const p = PLACE[st.p]; if (!p) return '';
+    let leg = '';
+    const nx = d.stops[i + 1] && PLACE[d.stops[i + 1].p];
+    if (nx && nx !== p) { const m = legMeters(p, nx); if (m <= 2000) walk += m; leg = `<li class="leg">${legText(m)}</li>`; }
+    const warn = p.id === 'sphere' && st.t && st.t > '19:00' ? `<small class="warn-txt">Shows start at 8:00 PM. Aim to arrive by 7:00 to see the atrium and get through security.</small>` : '';
+    return `<li class="stop"><button type="button" data-p="${p.id}"><span class="tl-time">${fmtTime(st.t)}</span><span class="tl-main"><b>${p.name}</b>${st.n ? `<small>${st.n.replace(/</g, '&lt;')}</small>` : ''}${warn}</span><span class="dot" style="background:var(${CAT[p.cat].color})"></span></button></li>${leg}`;
+  }).join('');
+  el.innerHTML = `
+    <div class="hdr"><h3>${d.title} · ${fmtDay(dayDate(t.active))}</h3>${walk ? `<span class="tag">${(walk / 1609).toFixed(1)} mi walking</span>` : ''}</div>
+    ${d.stops.length ? `<ol class="timeline">${items}</ol>` : '<p class="empty">No stops on this day yet.</p>'}`;
+}
+$('#timeline').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (!b) return; const p = PLACE[b.dataset.p]; selPlace = p; renderPlace(); centerPlace(p, Math.max(V.s, 0.7)); });
+
+/* ---------- Map settings ---------- */
+const LAYER_KEYS = ['seats', 'stay', 'food', 'sights', 'transit', 'trip', 'streets'];
+LAYER_KEYS.forEach(k => $('#ly_' + k).addEventListener('change', e => { S.layers[k] = e.target.checked; save(); queue(); }));
+function segBind(id, key, after) {
+  const el = $('#' + id);
+  el.addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; S[key] = b.dataset.v; syncMapControls(); save(); if (after) after(); queue(); });
+}
+segBind('detailSeg', 'detail'); segBind('lightSeg', 'mapLight', readTheme); segBind('labelSeg', 'labels');
+function syncMapControls() {
+  LAYER_KEYS.forEach(k => { $('#ly_' + k).checked = !!S.layers[k]; });
+  [['detailSeg', 'detail'], ['lightSeg', 'mapLight'], ['labelSeg', 'labels']].forEach(([id, key]) =>
+    $('#' + id).querySelectorAll('[data-v]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === S[key]))));
+}
+document.querySelectorAll('[data-fly]').forEach(b => b.onclick = () => flyTo(viewFor(b.dataset.fly), 900));
+
+/* ---------- Panels ---------- */
+function select(s, block) { sel = s; selBlock = block || null; if (S.tab !== 'seats') setTab('seats'); renderDossier(); renderPicks(); queueO(); }
+
+function bar(label, v, opts = {}) {
+  const color = opts.color || 'var(--ink)';
+  const tick = opts.tick != null ? `<span class="tick" style="left:calc(${opts.tick}% - 1px)" title="Your tolerance"></span>` : '';
+  return `<div class="bar"><span>${label}</span><div class="track"><div class="fill" style="width:${clamp(v)}%;background:${color}"></div>${tick}</div><output>${Math.round(v)}</output></div>`;
+}
+function notes(s) {
+  const n = [], L = s.L.id, num = +s.sec.num, a = Math.abs(s.th);
+  if (L === 'GA') { n.push('Standing room. Your spot depends on arrival time, and most of the dome is above and behind you.'); if (S.height >= 74) n.push('At your height you will see over most of the crowd, so GA plays better for you than average.'); }
+  if (s.under) n.push(`Under the 200-level overhang. John is clear, but the top of the dome is cut off, which removes much of the visual show.`);
+  if (L === '100' && !s.under && s.r <= 10) n.push('Very close to the stage. The dome sits high overhead and is hard to take in all at once.');
+  if (L === '100' && !s.under && s.r > 10) n.push('Strong middle ground in the 100s: close to the stage and still ahead of the overhang.');
+  if (L === '200' && num >= 205 && num <= 207 && s.r >= 10) n.push('The widely cited concert sweet spot: close enough for the band, high enough for the full wraparound screen.');
+  if (L === '200' && s.r <= 3) n.push('Front of the 200s. Clean sightline over the rail with no one in front of you.');
+  if (L === '300' && num >= 305 && num <= 307) n.push('The "director\'s seats": the visual production is designed from roughly here.');
+  if (L === '400' && s.r <= 6) n.push('Front of the 400s: the best-value way to see the whole dome. Steep drop to the rail.');
+  if (L === '400' && s.r > 15) n.push('High and steep. John will be small; the dome carries the night.');
+  if (a > 40 && L !== 'GA') n.push('Hard side angle. You will watch the stage partly in profile.');
+  if (s.vr > S.tol) n.push(`Vertigo risk (${Math.round(s.vr)}) is above your tolerance of ${S.tol}.`);
+  if (s.platPriced) n.push(`Most of this block will likely be sold as dynamically priced Platinum. The ${money(s.std)} standard price exists only for a thin slice of seats that goes in the first minutes of presale. In Ticketmaster, filter to "Standard Admission" to see if any are left.`);
+  else if (s.plat) n.push(`Showing the ${money(s.std)} standard price, but most seats in this block will likely be Platinum at 2–3× that. Standard seats here are a long shot after the first minutes of presale.`);
+  if (s.vip) n.push('Likely held for VIP or hotel packages. Expect little or no standard inventory here.');
+  if (s.aisle && L !== 'GA') n.push('Aisle seat: easier in and out, a bit of extra elbow room.');
+  return n;
+}
+function renderDossier() {
+  const s = sel, el = $('#dossier');
+  if (!s) { el.innerHTML = '<p class="empty">Click any seat on the map to see its grade, price and stats.</p>'; return; }
+  const [ol, oc] = oddsLabel(s.odds);
+  const ft = m => Math.round(m * 3.281) + ' ft';
+  const chips = [`<span class="chip ${oc}">${Math.round(s.odds * 100)}% chance open</span>`];
+  if (TAKEN.has(rowKey(s.row))) chips.push('<span class="chip bad">You marked this row taken</span>');
+  else if (S.sim && !s.open) chips.push('<span class="chip bad">Gone in this simulation</span>');
+  if (s.haptic) chips.push('<span class="chip">Haptic seat</span>');
+  if (s.aisle) chips.push('<span class="chip">Aisle</span>');
+  if (s.under) chips.push('<span class="chip bad">Overhang</span>');
+  if (s.platPriced) chips.push('<span class="chip warn">Priced as Platinum</span>');
+  else if (s.plat) chips.push('<span class="chip warn">Platinum zone</span>');
+  if (s.vip) chips.push('<span class="chip bad">Likely VIP hold</span>');
+  if (!s.inBudget) chips.push('<span class="chip warn">Over budget</span>');
+  const vColor = s.vr > S.tol ? 'var(--bad)' : s.vr > S.tol - 15 ? 'var(--warn)' : 'var(--good)';
+  const sub = s.L.ga ? GA_ROW[s.r - 1] + ' · standing' : `Row ${s.r} · Seat ${s.num} <span style="opacity:.7">of ${s.n}</span>`;
+  const isPinned = pins.includes(s);
+  el.innerHTML = `
+    <div class="d-head">
+      <div><p class="eyebrow">${s.L.name} · ${s.tier}</p><h2>${seatName(s)}<span>${sub}</span></h2></div>
+      <div class="grade" aria-label="Grade ${grade(s.overall)}">${grade(s.overall)}<small>${Math.round(s.overall)}/100</small></div>
+    </div>
+    <div class="prices">
+      <div class="${S.channel !== 'resale' ? 'on' : ''}"><span class="lbl">${s.platPriced ? 'Platinum est.' : 'Face est.'}</span><b>${money(s.face)}</b></div>
+      <div class="${S.channel === 'resale' ? 'on' : ''}"><span class="lbl">Resale est.</span><b>${money(s.resale)}</b></div>
+      <div><span class="lbl">${S.qty} × total</span><b>${money(s.price * S.qty)}</b></div>
+    </div>
+    <div class="chips">${chips.join('')}</div>
+    <div class="bars">
+      ${bar('Band view', s.band)}
+      ${bar('Dome visuals', s.imm)}
+      ${bar('Vertigo risk', s.vr, { color: vColor, tick: S.tol })}
+      ${bar('Comfort', s.cmf)}
+      ${bar('Sound', s.snd)}
+      ${bar('Value', s.value, { color: 'var(--s4)' })}
+    </div>
+    <dl class="geo">
+      <div><dt>To stage</dt><dd>${ft(s.dist)}</dd></div>
+      <div><dt>Above stage</dt><dd>${ft(s.H)}</dd></div>
+      <div><dt>Off center</dt><dd>${Math.round(Math.abs(s.th))}°</dd></div>
+      <div><dt>Look-down angle</dt><dd>${Math.round(s.down)}°</dd></div>
+      <div><dt>Vertigo</dt><dd>${vLabel(s.vr)}</dd></div>
+      <div><dt>Percentile</dt><dd>Top ${Math.max(1, Math.round(100 - s.pct * 100))}%</dd></div>
+      <div><dt>${S.together && S.qty > 1 && !s.L.ga ? S.qty + ' together in row' : 'Chance open'}</dt><dd>${Math.round((S.together && !s.L.ga ? s.row.chance : s.odds) * 100)}%</dd></div>
+    </dl>
+    <ul class="notes">${notes(s).map(t => `<li>${t}</li>`).join('')}</ul>
+    <div class="actions">
+      <button class="btn primary" type="button" id="pinBtn">${isPinned ? 'Unpin' : 'Pin to compare'}</button>
+      <button class="btn" type="button" id="ctrBtn">Center on map</button>
+    </div>`;
+  $('#pinBtn').onclick = () => {
+    const i = pins.indexOf(s);
+    if (i >= 0) pins.splice(i, 1); else { pins.push(s); if (pins.length > 4) pins.shift(); }
+    renderDossier(); renderCompare(); queue();
+  };
+  $('#ctrBtn').onclick = () => centerOn(s, Math.max(V.s, 12));
+}
+function renderCompare() {
+  $('#compareSec').hidden = !pins.length;
+  $('#cmpBody').innerHTML = pins.map((s, i) => `<tr class="click" data-i="${i}">
+    <td>${seatName(s, true)}</td><td class="n">${grade(s.overall)}</td><td class="n">${money(s.price)}</td>
+    <td class="n">${Math.round(s.band)}</td><td class="n">${Math.round(s.imm)}</td><td class="n">${Math.round(s.vr)}</td>
+    <td><button type="button" data-rm="${i}" aria-label="Remove">✕</button></td></tr>`).join('');
+}
+$('#cmpBody').addEventListener('click', e => {
+  const rm = e.target.closest('[data-rm]');
+  if (rm) { pins.splice(+rm.dataset.rm, 1); renderCompare(); renderDossier(); queue(); return; }
+  const tr = e.target.closest('tr[data-i]'); if (tr) { const s = pins[+tr.dataset.i]; select(s); centerOn(s); }
+});
+
+const sortKey = { overall: s => s.overall, value: s => s.value, band: s => s.band, imm: s => s.imm };
+let PICKS = [];
+// best block of q adjacent eligible seats in a row; needOpen = must survive the simulation
+function bestWindow(row, q, needOpen, f) {
+  if (row.sec.L.ga) {
+    const s = SEATS[row.start];
+    return s.active && s.inBudget && (!needOpen || s.open) ? { seats: [s], avg: f(s) } : null;
+  }
+  let best = null, run = [];
+  for (let k = 0; k < row.n; k++) {
+    const s = SEATS[row.start + k];
+    if (!(s.active && s.inBudget && (!needOpen || s.open))) { run = []; continue; }
+    run.push(s);
+    if (run.length >= q) {
+      const w = run.slice(-q), avg = w.reduce((a, x) => a + f(x), 0) / q;
+      if (!best || avg > best.avg) best = { seats: w, avg };
+    }
+  }
+  return best;
+}
+let OUTLOOK = [];
+function computePicks() {
+  const f = sortKey[S.pickSort] || sortKey.overall;
+  const q = S.together ? S.qty : 1;
+  const best = [], byLevel = {};
+  for (const row of ROWS) {
+    const potential = bestWindow(row, q, false, sortKey.overall);
+    if (potential) {
+      const lv = byLevel[row.sec.L.id] || (byLevel[row.sec.L.id] = { L: row.sec.L, likely: null, stretch: null });
+      const ent = { row, w: potential };
+      if (row.chance >= 0.5) { if (!lv.likely || potential.avg > lv.likely.w.avg) lv.likely = ent; }
+      else if (row.chance >= 0.25) { if (!lv.stretch || potential.avg > lv.stretch.w.avg) lv.stretch = ent; }
+    }
+    const w = bestWindow(row, q, S.sim, f);
+    if (!w) continue;
+    if (row.chance * 100 < S.minChance) continue;
+    best.push({ row, w, s: w.seats[Math.floor((w.seats.length - 1) / 2)] });
+  }
+  best.sort((a, b) => b.w.avg - a.w.avg);
+  const perSec = {};
+  PICKS = best.filter(p => (perSec[p.row.sec.num] = (perSec[p.row.sec.num] || 0) + 1) <= 2).slice(0, 12);
+  OUTLOOK = LEVELS.map(L => byLevel[L.id]).filter(Boolean).filter(x => x.likely || x.stretch);
+  OUTLOOK.forEach(x => { if (x.stretch && x.likely && x.stretch.w.avg <= x.likely.w.avg) x.stretch = null; });
+}
+const blockLabel = w => {
+  const a = w.seats[0], b = w.seats[w.seats.length - 1];
+  if (a.L.ga) return 'GA Floor · ' + GA_ROW[a.r - 1].toLowerCase();
+  return `${a.sec.num} · Row ${a.r} · ${a === b ? 'Seat ' + a.num : 'Seats ' + a.num + '–' + b.num}`;
+};
+function renderPicks() {
+  const ol = $('#picks');
+  const q = S.together ? S.qty : 1;
+  $('#picksTitle').textContent = S.sim ? `Open in this simulation · ${q} together` : `Best realistic rows · ${q} together`;
+  if (!PICKS.length) { ol.innerHTML = '<li class="empty">Nothing fits. Raise your budget, lower the minimum chance, or reshuffle the simulation.</li>'; return; }
+  ol.innerHTML = PICKS.map(({ s, w, row }, i) => {
+    const avgPrice = w.seats.reduce((a, x) => a + x.price, 0) / w.seats.length;
+    return `<li><button type="button" data-i="${i}" class="${sel && sel.row === row ? 'sel' : ''}">
+      <span class="g-sm">${grade(w.seats.reduce((a, x) => a + x.overall, 0) / w.seats.length)}</span>
+      <span class="main"><b>${blockLabel(w)}</b><small>${Math.round(row.chance * 100)}% chance${q > 1 && !s.L.ga ? ' of ' + q + ' together' : ''} · dome ${Math.round(s.imm)} · band ${Math.round(s.band)}${s.platPriced ? ' · Platinum' : ''}</small></span>
+      <span class="pr">${money(avgPrice)}<small>${money(avgPrice * S.qty)} total</small></span></button></li>`;
+  }).join('');
+}
+$('#picks').addEventListener('click', e => {
+  const b = e.target.closest('button[data-i]'); if (!b) return;
+  const p = PICKS[+b.dataset.i]; select(p.s, p.w.seats); centerOn(p.s, p.s.L.ga ? 9 : 14);
+});
+function renderOutlook() {
+  const cell = e => {
+    if (!e) return '<td class="muted-cell">—</td>';
+    const s = e.w.seats[0], avgP = e.w.seats.reduce((a, x) => a + x.price, 0) / e.w.seats.length;
+    const g = grade(e.w.seats.reduce((a, x) => a + x.overall, 0) / e.w.seats.length);
+    const where = s.L.ga ? 'GA ' + GA_ROW[s.r - 1].toLowerCase() : `${s.sec.num} · R${s.r}`;
+    return `<td><button type="button" class="olink" data-k="${s.id}"><b>${g}</b> ${where}</button><small>${money(avgP)} · ${Math.round(e.row.chance * 100)}%</small></td>`;
+  };
+  $('#outlook').innerHTML = OUTLOOK.length ? OUTLOOK.map(x => `<tr><th scope="row">${x.L.id === 'GA' ? 'GA' : x.L.id + 's'}</th>${cell(x.likely)}${cell(x.stretch)}</tr>`).join('')
+    : '<tr><td colspan="3" class="muted-cell">Nothing has a 25%+ chance at these settings.</td></tr>';
+}
+$('#outlook').addEventListener('click', e => {
+  const b = e.target.closest('[data-k]'); if (!b) return;
+  const s0 = SEATS[+b.dataset.k], q = S.together ? S.qty : 1;
+  const w = bestWindow(s0.row, q, false, sortKey.overall);
+  const s = w ? w.seats[Math.floor((w.seats.length - 1) / 2)] : s0;
+  select(s, w && w.seats); centerOn(s, s.L.ga ? 9 : 14);
+});
+function renderTiers() {
+  $('#tiers').innerHTML = TIERS.map((t, i) => `<tr class="click" data-i="${i}" tabindex="0">
+    <td>${t.name}</td><td class="n">${money(t.face)}</td><td class="n">${money(t.resMed)}</td>
+    <td class="n">${grade(t.best.overall)}</td><td class="n">${S.channel === 'resale' ? '—' : oddsLabel(t.oddsMed)[0].replace(' odds', '')}</td></tr>`).join('');
+}
+const tierGo = e => { const tr = e.target.closest('tr[data-i]'); if (!tr) return; const s = TIERS[+tr.dataset.i].best; select(s); centerOn(s, s.L.ga ? 9 : 12); };
+$('#tiers').addEventListener('click', tierGo);
+$('#tiers').addEventListener('keydown', e => { if (e.key === 'Enter') tierGo(e); });
+
+/* ---------- Controls ---------- */
+const showSel = $('#show');
+showSel.innerHTML = SHOWS.map(s => `<option value="${s.id}">${s.label}</option>`).join('');
+$('#qty').innerHTML = range(1, 8).map(n => `<option value="${n}">${n}</option>`).join('');
+const seg = $('#channel');
+seg.innerHTML = CHANNELS.map(c => `<button type="button" role="radio" data-c="${c.id}">${c.label}<small>${c.sub}</small></button>`).join('');
+seg.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.channel = b.dataset.c; update(); });
+$('#presets').innerHTML = Object.entries(PRESETS).map(([k, p]) => `<button type="button" class="chipbtn" data-p="${k}">${p.label}</button>`).join('');
+$('#presets').addEventListener('click', e => {
+  const b = e.target.closest('[data-p]'); if (!b) return;
+  const p = PRESETS[b.dataset.p]; S.w = { ...p.w }; if (p.tol != null) S.tol = p.tol; update();
+});
+['band', 'imm', 'vrt', 'cmf', 'snd'].forEach(k => $('#w_' + k).addEventListener('input', e => { S.w[k] = +e.target.value; update(); }));
+$('#reshuffle').onclick = () => { S.seed = (S.seed % 9973) + 1; update(); };
+$('#clearMarks').onclick = () => { S.taken[S.show] = []; update(); };
+$('#markBtn').onclick = () => { markMode = !markMode; $('#markBtn').setAttribute('aria-pressed', String(markMode)); $('#markBar').hidden = !markMode; cvO.style.cursor = markMode ? 'crosshair' : ''; };
+['tol', 'height', 'ov', 'budget', 'heat', 'platMult', 'qMin', 'minChance'].forEach(k => $('#' + k).addEventListener('input', e => { S[k] = +e.target.value; update(); }));
+['aisle', 'standOK', 'ga', 'hideVip', 'dimBudget', 'hideLong', 'platOn', 'together', 'sim'].forEach(k => $('#' + k).addEventListener('change', e => { S[k] = e.target.checked; update(); }));
+showSel.addEventListener('change', e => { S.show = e.target.value; update(); });
+$('#qty').addEventListener('change', e => { S.qty = +e.target.value; update(); });
+$('#colorBy').addEventListener('change', e => { S.colorBy = e.target.value; update(); });
+$('#pickSort').addEventListener('change', e => { S.pickSort = e.target.value; update(); });
+$('#reset').onclick = () => { S = Object.assign(structuredClone(DEFAULTS), { trips: S.trips, taken: S.taken, tab: S.tab }); update(); };
+
+const ftin = i => `${Math.floor(i / 12)}′${i % 12}″`;
+function syncControls() {
+  showSel.value = S.show; $('#qty').value = S.qty; $('#colorBy').value = S.colorBy; $('#pickSort').value = S.pickSort;
+  seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', String(b.dataset.c === S.channel)));
+  const tw = Object.values(S.w).reduce((a, b) => a + b, 0) || 1;
+  ['band', 'imm', 'vrt', 'cmf', 'snd'].forEach(k => { $('#w_' + k).value = S.w[k]; $('#o_' + k).textContent = Math.round(100 * S.w[k] / tw) + '%'; });
+  const pk = Object.entries(PRESETS).find(([, p]) => Object.keys(p.w).every(k => p.w[k] === S.w[k]));
+  $('#presets').querySelectorAll('[data-p]').forEach(b => b.setAttribute('aria-pressed', String(!!pk && pk[0] === b.dataset.p)));
+  $('#tol').value = S.tol; $('#o_tol').textContent = S.tol + ' · ' + (S.tol < 35 ? 'sensitive' : S.tol < 65 ? 'average' : 'iron stomach');
+  $('#height').value = S.height; $('#o_height').textContent = ftin(S.height);
+  $('#ov').value = S.ov; $('#o_ov').textContent = 'Row ' + S.ov;
+  $('#budget').value = S.budget; $('#o_budget').textContent = S.budget >= 1500 ? 'No limit' : money(S.budget);
+  $('#heat').value = S.heat; $('#o_heat').textContent = S.heat.toFixed(2) + '×';
+  ['aisle', 'standOK', 'ga', 'hideVip', 'dimBudget', 'hideLong', 'platOn', 'together', 'sim'].forEach(k => { $('#' + k).checked = !!S[k]; });
+  $('#qMin').value = S.qMin; $('#o_qMin').textContent = S.qMin ? S.qMin + ' min after open' : 'Right at open';
+  $('#minChance').value = S.minChance; $('#o_minChance').textContent = S.minChance + '% chance';
+  const nMarks = (S.taken[S.show] || []).length;
+  $('#clearMarks').textContent = nMarks ? `Clear my marks (${nMarks})` : 'Clear my marks';
+  $('#clearMarks').disabled = !nMarks;
+  $('#reshuffle').disabled = !S.sim;
+  document.querySelectorAll('input[type=range]').forEach(r => r.style.setProperty('--fill', ((r.value - r.min) / (r.max - r.min) * 100) + '%'));
+  $('#platMult').value = S.platMult; $('#o_platMult').textContent = S.platMult.toFixed(1) + '×';
+  $('#platMult').disabled = !S.platOn;
+}
+
+let pending = 0;
+function update() {
+  syncControls(); save();
+  if (pending) return;
+  pending = requestAnimationFrame(() => {
+    pending = 0;
+    const budgetMax = S.budget >= 1500 ? Infinity : S.budget;
+    const keep = S.budget; S.budget = budgetMax;
+    recompute(); computePicks();
+    S.budget = keep;
+    syncMapControls(); readTheme(); renderTrip(); renderPlace(); renderTimeline();
+    renderDossier(); renderCompare(); renderPicks(); renderTiers(); renderOutlook(); outlookSub(); draw();
+  });
+}
+function outlookSub() {
+  const ch = CHANNELS.find(c => c.id === S.channel);
+  const q = S.together ? S.qty : 1;
+  $('#outlookSub').textContent = S.channel === 'resale'
+    ? `Resale, ${q} together, up to ${S.budget >= 1500 ? 'any price' : money(S.budget)} each. Resale odds are rough.`
+    : `${ch.label}, ${S.qMin ? S.qMin + ' min in' : 'at open'}, ${q} together, up to ${S.budget >= 1500 ? 'any price' : money(S.budget)} each. Tap a row to see it.`;
+}
+
+/* ---------- Boot ---------- */
+readTheme();
+const mq = matchMedia('(prefers-color-scheme: dark)');
+const retheme = () => { readTheme(); draw(); };
+mq.addEventListener ? mq.addEventListener('change', retheme) : mq.addListener(retheme);
+new MutationObserver(retheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
+
+syncControls();
+const b0 = S.budget; S.budget = S.budget >= 1500 ? Infinity : S.budget;
+recompute(); computePicks(); S.budget = b0;
+if (PICKS.length) { sel = PICKS[0].s; selBlock = PICKS[0].w.seats; } else sel = SEATS[SEC_BY_NUM['206'].rows[11].start + 8];
+renderDossier(); renderCompare(); renderPicks(); renderTiers(); renderOutlook(); outlookSub();
+syncMapControls(); setTab(S.tab || 'seats'); renderTrip(); renderPlace(); renderTimeline();
+new ResizeObserver(resize).observe(wrap);
+resize();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => draw());
+})();
+</script>
+
+</body></html>
